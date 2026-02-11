@@ -3,365 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Trader: MOEX Real-Time</title>
+    <title>AI Sniper: 10 Assets</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: #121212;
-            --text-main: #e0e0e0;
-            --accent-green: #00e676;
-            --accent-red: #ff1744;
-            --accent-blue: #2979ff;
+            --bg-color: #000000;
+            --card-bg: #141414;
+            --text-main: #ededed;
+            --accent-green: #00ff66;
+            --accent-red: #ff3333;
+            --accent-blue: #00ccff;
             --border: #333;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 12px;
-            padding-bottom: 100px;
+            padding: 10px;
+            padding-bottom: 80px;
         }
 
         h1 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: center;
-            margin: 10px 0 20px 0;
             color: var(--accent-blue);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #222;
-            padding-bottom: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: 900;
         }
 
         /* Settings */
         .settings-panel {
-            background: #1a1a1a;
+            background: #0a0a0a;
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
+            padding: 15px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,204,255,0.1);
         }
 
-        .input-group label {
-            display: block;
-            font-size: 0.7rem;
-            color: #888;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .input-group input, .input-group select {
+        .input-group input {
             width: 100%;
             background: #000;
             border: 1px solid #444;
             color: #fff;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 0.9rem;
             outline: none;
             box-sizing: border-box;
             margin-bottom: 10px;
         }
 
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-
+        .controls { display: flex; gap: 10px; }
+        
         button {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: none;
             border-radius: 8px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.9rem;
             text-transform: uppercase;
             cursor: pointer;
-            transition: 0.2s;
         }
-
-        .btn-start { background: var(--accent-green); color: #000; }
-        .btn-stop { background: var(--accent-red); color: #fff; }
         
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-start { background: linear-gradient(45deg, #00b09b, #96c93d); color: #000; }
+        .btn-stop { background: #333; color: #fff; }
 
-        /* Status */
-        .status-bar {
-            text-align: center;
-            font-family: monospace;
-            color: #666;
-            margin-top: 10px;
-            font-size: 0.8rem;
+        /* Grid for 10 items */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Mobile: 1 column */
+            gap: 12px;
         }
-
-        /* Cards */
-        .grid { display: grid; gap: 12px; }
+        
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: 1fr 1fr; } /* Tablet: 2 cols */
+        }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 10px;
+            padding: 12px;
             position: relative;
         }
 
+        /* Header */
         .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .asset-name { font-weight: bold; font-size: 1rem; color: #fff; }
+        .asset-code { font-size: 0.7rem; color: #666; font-family: monospace; }
+        
+        .price-current { font-size: 1.1rem; font-weight: bold; font-family: monospace; text-align: right; }
+        .price-change { font-size: 0.75rem; text-align: right; font-weight: bold; }
+        
+        /* Candles Visual */
+        .candle-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 8px;
             border-bottom: 1px solid #222;
-            padding-bottom: 8px;
+            padding-bottom: 5px;
         }
 
-        .asset-info { display: flex; flex-direction: column; }
-        .asset-title { font-size: 1.1rem; font-weight: bold; color: #fff; }
-        .asset-code { font-size: 0.75rem; color: #666; font-family: monospace; }
-
-        .price-box { text-align: right; }
-        .price-val { font-size: 1.1rem; font-weight: bold; font-family: monospace; }
-        .price-change { font-size: 0.8rem; font-weight: bold; }
-        
-        .p-up { color: var(--accent-green); }
-        .p-down { color: var(--accent-red); }
-
-        .signal-badge {
-            display: block;
-            text-align: center;
+        /* AI Signal */
+        .signal-box {
+            background: #111;
             padding: 8px;
             border-radius: 6px;
+            text-align: center;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             text-transform: uppercase;
             margin: 10px 0;
-            background: #222;
-            color: #555;
             border: 1px solid #333;
         }
 
-        .sig-long { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border-color: var(--accent-green); }
-        .sig-short { background: rgba(255, 23, 68, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
+        .sig-buy { color: var(--accent-green); border-color: var(--accent-green); background: rgba(0,255,102,0.05); }
+        .sig-sell { color: var(--accent-red); border-color: var(--accent-red); background: rgba(255,51,51,0.05); }
 
-        .ai-text {
-            font-size: 0.85rem;
-            color: #bbb;
-            line-height: 1.4;
-            background: #080808;
-            padding: 10px;
-            border-radius: 6px;
+        .ai-reason {
+            font-size: 0.8rem;
+            color: #ccc;
+            line-height: 1.3;
+            margin-bottom: 8px;
         }
 
         .levels {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
             font-family: monospace;
             font-size: 0.9rem;
             font-weight: bold;
+            background: #000;
+            padding: 6px;
+            border-radius: 4px;
         }
-        .lvl-sl { color: #ff5252; }
-        .lvl-tp { color: #69f0ae; }
-
-        .loader { display: none; text-align: center; color: var(--accent-blue); padding: 10px; }
         
-        .error-msg { color: var(--accent-red); font-size: 0.8rem; display: none; text-align: center;}
+        .lvl-sl { color: #ff5252; }
+        .lvl-tp { color: #00e676; }
+
+        .status-bar { text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
+        .loader { display: none; text-align: center; padding: 20px; color: var(--accent-blue); }
     </style>
 </head>
 <body>
 
-    <h1>MOEX Real-Time + AI</h1>
+    <h1>⚡ AI SCALPER v5.0</h1>
 
     <div class="settings-panel">
         <div class="input-group">
-            <label>OpenRouter API Key:</label>
-            <input type="password" id="apiKey" placeholder="sk-or-v1-..." autocomplete="off">
-        </div>
-        <div class="input-group">
-            <label>AI Модель:</label>
-            <select id="modelSelect">
-                <option value="deepseek/deepseek-v3.2" selected>DeepSeek V3.2 (Быстрая)</option>
-                <option value="deepseek/deepseek-r1">DeepSeek R1 (Умная)</option>
-            </select>
+            <input type="password" id="apiKey" placeholder="OpenRouter API Key (sk-or-...)">
         </div>
         <div class="controls">
-            <button class="btn-start" onclick="startSystem()">START (5 min)</button>
-            <button class="btn-stop" onclick="stopSystem()">STOP</button>
+            <button class="btn-start" onclick="startCycle()">ЗАПУСК (АГРЕССИВНО)</button>
+            <button class="btn-stop" onclick="stopCycle()">СТОП</button>
         </div>
-        <div class="status-bar" id="status">Система готова</div>
-        <div class="error-msg" id="errorBox"></div>
+        <div class="status-bar" id="timerDisplay">Система готова</div>
     </div>
 
-    <div id="loader" class="loader">🔄 Получаю данные с Мосбиржи...</div>
-
+    <div id="loader" class="loader">📡 Сканирую рынок (MOEX ISS)...</div>
     <div class="grid" id="cards"></div>
 
     <script>
-        // --- КОНФИГУРАЦИЯ ТИКЕРОВ (МАРТ 2026) ---
-        // Используем коды, которые понимает API MOEX ISS
-        const INSTRUMENTS = [
-            { code: 'SRH6', title: 'Сбербанк', view: 'SBRF-3.26' },
-            { code: 'SiH6', title: 'Доллар/Рубль', view: 'Si-3.26' },
-            { code: 'CRH6', title: 'Юань/Рубль', view: 'CNY-3.26' },
-            { code: 'SVH6', title: 'Серебро', view: 'SILV-3.26' },
-            { code: 'MXH6', title: 'Индекс MOEX', view: 'MIX-3.26' }
+        // --- 10 ИНСТРУМЕНТОВ (КОДЫ МАРТ 2026 / H6) ---
+        // Если тикеров 3.26 нет в API, скрипт не упадет (Try-Catch)
+        const ASSETS = [
+            { code: 'SRH6', name: 'Сбербанк', desc: 'SBRF-3.26' },
+            { code: 'SiH6', name: 'Доллар', desc: 'Si-3.26' },
+            { code: 'CRH6', name: 'Юань', desc: 'CNY-3.26' },
+            { code: 'EuH6', name: 'Евро', desc: 'Eu-3.26' },
+            { code: 'GDH6', name: 'Золото', desc: 'GOLD-3.26' },
+            { code: 'SVH6', name: 'Серебро', desc: 'SILV-3.26' },
+            { code: 'BRH6', name: 'Нефть Brent', desc: 'BR-3.26' },
+            { code: 'NGH6', name: 'Натур. Газ', desc: 'NG-3.26' },
+            { code: 'WHH6', name: 'Пшеница', desc: 'WHEAT-3.26' },
+            { code: 'MXH6', name: 'Индекс MOEX', desc: 'MIX-3.26' }
         ];
 
-        let marketData = {}; // Хранилище реальных цен
-        let timer = null;
-        let countdown = null;
-        const INTERVAL = 300000; // 5 минут
+        let marketData = {};
+        let intervalRef = null;
+        let countdownRef = null;
+        const CYCLE_TIME = 300000; // 5 минут
 
-        // --- INIT ---
+        // INIT
         window.onload = () => {
-            const key = localStorage.getItem('or_key');
-            if(key) document.getElementById('apiKey').value = key;
-            renderCards();
+            if(localStorage.getItem('or_key')) {
+                document.getElementById('apiKey').value = localStorage.getItem('or_key');
+            }
+            renderGrid();
         };
 
-        function renderCards() {
-            const container = document.getElementById('cards');
-            container.innerHTML = '';
-            INSTRUMENTS.forEach(inst => {
-                container.innerHTML += `
-                    <div class="card" id="card-${inst.code}">
+        function renderGrid() {
+            const grid = document.getElementById('cards');
+            grid.innerHTML = '';
+            ASSETS.forEach(a => {
+                grid.innerHTML += `
+                    <div class="card" id="card-${a.code}">
                         <div class="card-header">
-                            <div class="asset-info">
-                                <span class="asset-title">${inst.title}</span>
-                                <span class="asset-code">${inst.view}</span>
+                            <div>
+                                <div class="asset-name">${a.name}</div>
+                                <div class="asset-code">${a.desc}</div>
                             </div>
-                            <div class="price-box">
-                                <div class="price-val" id="price-${inst.code}">---</div>
-                                <div class="price-change" id="change-${inst.code}">0.00%</div>
+                            <div>
+                                <div class="price-current" id="p-${a.code}">---</div>
+                                <div class="price-change" id="c-${a.code}">0%</div>
                             </div>
                         </div>
-                        <div class="signal-badge" id="sig-${inst.code}">ЖДУ ДАННЫЕ</div>
-                        <div class="ai-text" id="text-${inst.code}">Нажмите START для анализа...</div>
+                        <div class="candle-info">
+                            <span>L: <span id="l-${a.code}">--</span></span>
+                            <span>H: <span id="h-${a.code}">--</span></span>
+                        </div>
+                        <div class="signal-box" id="sig-${a.code}">ЖДУ ДАННЫЕ</div>
+                        <div class="ai-reason" id="r-${a.code}">Нажмите ЗАПУСК для анализа</div>
                     </div>
                 `;
             });
         }
 
-        // --- ЛОГИКА ---
-        function startSystem() {
+        // CONTROL
+        function startCycle() {
             const key = document.getElementById('apiKey').value;
-            if(!key) return alert('Нужен API ключ OpenRouter!');
+            if(!key) return alert('Введите ключ!');
             localStorage.setItem('or_key', key);
-
+            
             document.querySelector('.btn-start').disabled = true;
-            document.getElementById('status').innerText = 'Запуск...';
-            document.getElementById('errorBox').style.display = 'none';
-
-            runCycle();
-            timer = setInterval(runCycle, INTERVAL);
+            document.querySelector('.btn-start').innerText = 'РАБОТАЕТ...';
+            
+            runAnalysis();
+            intervalRef = setInterval(runAnalysis, CYCLE_TIME);
         }
 
-        function stopSystem() {
-            clearInterval(timer);
-            clearInterval(countdown);
+        function stopCycle() {
+            clearInterval(intervalRef);
+            clearInterval(countdownRef);
             document.querySelector('.btn-start').disabled = false;
-            document.getElementById('status').innerText = 'Остановлено';
+            document.querySelector('.btn-start').innerText = 'ЗАПУСК';
+            document.getElementById('timerDisplay').innerText = 'Остановлено';
         }
 
-        async function runCycle() {
-            // 1. Сначала берем цены с MOEX
-            await fetchMoexData();
-            
-            // 2. Потом отправляем их в DeepSeek
-            await getAiAnalysis();
-            
-            // 3. Запускаем таймер
-            startCountdown(INTERVAL / 1000);
-        }
-
-        // --- ШАГ 1: MOEX API (Реальные данные) ---
-        async function fetchMoexData() {
+        async function runAnalysis() {
             document.getElementById('loader').style.display = 'block';
-            document.getElementById('status').innerText = '📡 MOEX: Обновление цен...';
+            
+            // 1. Получаем реальные свечи
+            await fetchMoex();
 
-            for (let inst of INSTRUMENTS) {
+            // 2. Отправляем в AI
+            await askDeepSeek();
+            
+            // 3. Таймер
+            startTimer(CYCLE_TIME / 1000);
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        // --- STEP 1: MOEX API ---
+        async function fetchMoex() {
+            for (let asset of ASSETS) {
                 try {
-                    // Официальный бесплатный API Мосбиржи (JSON)
-                    const url = `https://iss.moex.com/iss/engines/futures/markets/forts/securities/${inst.code}.json`;
-                    
+                    // Запрос к бесплатному API
+                    const url = `https://iss.moex.com/iss/engines/futures/markets/forts/securities/${asset.code}.json`;
                     const res = await fetch(url);
-                    if (!res.ok) throw new Error('Network error');
-                    
                     const json = await res.json();
-                    
-                    // Парсим сложный ответ MOEX ISS
-                    // marketdata -> index 0 is columns, index 1 is data
-                    const md = json.marketdata.data[0]; 
+
+                    // Парсинг данных (Open, High, Low, Last)
+                    const data = json.marketdata.data[0];
                     const cols = json.marketdata.columns;
                     
-                    // Находим индексы нужных колонок
-                    const idxLast = cols.indexOf('LAST'); // Последняя цена
-                    const idxChange = cols.indexOf('LASTCHANGEPRCNT'); // Изменение %
+                    const getLast = (name) => data[cols.indexOf(name)];
+                    
+                    const price = getLast('LAST');
+                    const change = getLast('LASTCHANGEPRCNT');
+                    const high = getLast('HIGH');
+                    const low = getLast('LOW');
+                    const open = getLast('OPEN');
 
-                    const price = md[idxLast];
-                    const change = md[idxChange];
-
-                    // Сохраняем в глобальный объект
-                    marketData[inst.code] = {
-                        price: price,
-                        change: change
+                    // Если биржа вернула null (нет сделок), ставим 0
+                    marketData[asset.code] = {
+                        price: price || 0,
+                        change: change || 0,
+                        high: high || price,
+                        low: low || price,
+                        open: open || price
                     };
 
-                    // Обновляем UI сразу
-                    updatePriceUI(inst.code, price, change);
+                    // Обновляем UI (Цены)
+                    updatePriceCard(asset.code);
 
                 } catch (e) {
-                    console.error(`Ошибка MOEX для ${inst.code}:`, e);
-                    // Если ошибка, ставим заглушку, но не ломаем цикл
-                    marketData[inst.code] = { price: 0, change: 0 };
+                    console.log('Error fetching ' + asset.code);
+                    marketData[asset.code] = { price: 0, change: 0, high: 0, low: 0 };
                 }
             }
         }
 
-        function updatePriceUI(code, price, change) {
-            const pEl = document.getElementById(`price-${code}`);
-            const cEl = document.getElementById(`change-${code}`);
+        function updatePriceCard(code) {
+            const d = marketData[code];
+            document.getElementById(`p-${code}`).innerText = d.price;
+            
+            const cEl = document.getElementById(`c-${code}`);
+            cEl.innerText = d.change + '%';
+            cEl.style.color = d.change >= 0 ? '#00ff66' : '#ff3333';
 
-            if (price) {
-                pEl.innerText = price.toLocaleString();
-                cEl.innerText = (change > 0 ? '+' : '') + change + '%';
-                
-                // Цвет
-                cEl.className = 'price-change ' + (change >= 0 ? 'p-up' : 'p-down');
-                pEl.style.color = (change >= 0 ? 'var(--accent-green)' : 'var(--accent-red)');
-            } else {
-                pEl.innerText = 'ERR';
-            }
+            document.getElementById(`l-${code}`).innerText = d.low;
+            document.getElementById(`h-${code}`).innerText = d.high;
         }
 
-        // --- ШАГ 2: DeepSeek AI (Анализ) ---
-        async function getAiAnalysis() {
-            document.getElementById('status').innerText = '🧠 AI: Анализ рынка...';
+        // --- STEP 2: DEEPSEEK BRAIN ---
+        async function askDeepSeek() {
             const key = document.getElementById('apiKey').value;
-            const model = document.getElementById('modelSelect').value;
-
-            // Формируем честный промпт с РЕАЛЬНЫМИ данными
-            const dataString = INSTRUMENTS.map(i => {
-                const d = marketData[i.code];
-                return `${i.title} (${i.code}): Цена=${d.price}, Изм=${d.change}%`;
+            
+            // Формируем "техническую картину" для ИИ
+            const promptData = ASSETS.map(a => {
+                const d = marketData[a.code];
+                // Если данных нет
+                if(d.price === 0) return `${a.name}: НЕТ ДАННЫХ (Рынок закрыт или неликвид)`;
+                
+                // Вычисляем положение цены внутри дня (Candle Position)
+                let candlePos = "В середине";
+                if (d.price >= d.high * 0.999) candlePos = "На Хаях (High)";
+                if (d.price <= d.low * 1.001) candlePos = "На Лоях (Low)";
+                
+                return `${a.name} (${a.code}): Цена=${d.price}, Изм=${d.change}%, High=${d.high}, Low=${d.low}. Позиция: ${candlePos}`;
             }).join('\n');
 
             const prompt = `
-            Ты скальпер-робот. Вот РЕАЛЬНЫЕ данные с биржи прямо сейчас (${new Date().toLocaleTimeString()}):
+            Ты Агрессивный Скальпер на FORTS. Твоя цель: Найти сделку ЛЮБОЙ ЦЕНОЙ.
+            Не используй слово "ЖДАТЬ" или "НАБЛЮДЕНИЕ", если рынок открыт.
             
-            ${dataString}
+            ТЕКУЩАЯ СИТУАЦИЯ:
+            ${promptData}
             
-            Задача: Исходя ИМЕННО ИЗ ЭТИХ ЦИФР, дай прогноз на 5 минут.
-            Если изменение цены около 0%, пиши WAIT. Если сильное движение (>0.5%), торгуй по тренду.
+            ИНСТРУКЦИЯ:
+            1. Если Цена около High -> Ищи пробой вверх (LONG) или отскок (SHORT). Решай сам.
+            2. Если Цена около Low -> Ищи откуп (LONG) или пробой вниз (SHORT).
+            3. Если волатильность 0% (флэт), дай рекомендацию на отложенный ордер (Лимитка).
             
-            Ответ СТРОГО JSON массив (без markdown):
+            ОТВЕТ ТОЛЬКО JSON:
             [{
                 "id": "SRH6",
-                "action": "LONG/SHORT/WAIT",
-                "reason": "Короткое пояснение",
-                "sl": "Уровень стопа (число)",
-                "tp": "Уровень тейка (число)"
+                "action": "LONG" или "SHORT",
+                "reason": "Тех. анализ в 5 словах",
+                "sl": "число",
+                "tp": "число"
             }, ...]
             `;
 
@@ -370,59 +364,49 @@
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${key}`,
-                        "Content-Type": "application/json",
-                        "X-Title": "MoexRealTime"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "model": model,
+                        "model": "deepseek/deepseek-v3.2", // Используем быструю v3.2
                         "messages": [{"role": "user", "content": prompt}],
-                        "temperature": 0.5
+                        "temperature": 0.7 
                     })
                 });
 
                 const json = await res.json();
-                const content = json.choices[0].message.content;
-                
-                // Парсим JSON (очистка от ```json)
-                const cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
-                const signals = JSON.parse(cleanJson);
+                const content = json.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '');
+                const signals = JSON.parse(content);
                 
                 applySignals(signals);
 
             } catch (e) {
                 console.error(e);
-                document.getElementById('errorBox').innerText = 'Ошибка AI: ' + e.message;
-                document.getElementById('errorBox').style.display = 'block';
-            } finally {
-                document.getElementById('loader').style.display = 'none';
+                alert('Ошибка ИИ. Проверь ключ.');
             }
         }
 
         function applySignals(signals) {
             signals.forEach(s => {
-                const card = document.getElementById(`card-${s.id}`);
-                if (!card) return;
-
                 const badge = document.getElementById(`sig-${s.id}`);
-                const text = document.getElementById(`text-${s.id}`);
-                const act = s.action.toUpperCase();
+                const reason = document.getElementById(`r-${s.id}`);
+                const card = document.getElementById(`card-${s.id}`);
 
-                // Сброс
-                badge.className = 'signal-badge';
-                
-                if (act.includes('LONG')) {
-                    badge.classList.add('sig-long');
+                if(!badge) return;
+
+                // Оформление
+                if (s.action.includes('LONG')) {
                     badge.innerText = 'ПОКУПАТЬ 🚀';
-                } else if (act.includes('SHORT')) {
-                    badge.classList.add('sig-short');
+                    badge.className = 'signal-box sig-buy';
+                } else if (s.action.includes('SHORT')) {
                     badge.innerText = 'ПРОДАВАТЬ 🔻';
+                    badge.className = 'signal-box sig-sell';
                 } else {
-                    badge.innerText = 'НАБЛЮДЕНИЕ 👀';
-                    badge.style.borderColor = '#444';
-                    badge.style.color = '#888';
+                    badge.innerText = 'ЛИМИТКА 🛡️'; // Если ИИ все же решил ждать
+                    badge.className = 'signal-box';
+                    badge.style.color = '#ccc';
                 }
 
-                text.innerHTML = `
+                reason.innerHTML = `
                     ${s.reason}
                     <div class="levels">
                         <span class="lvl-sl">SL: ${s.sl}</span>
@@ -432,12 +416,12 @@
             });
         }
 
-        function startCountdown(sec) {
-            const st = document.getElementById('status');
-            clearInterval(countdown);
-            countdown = setInterval(() => {
-                st.innerText = `След. обновление: ${sec--} сек`;
-                if (sec < 0) clearInterval(countdown);
+        function startTimer(sec) {
+            clearInterval(countdownRef);
+            const display = document.getElementById('timerDisplay');
+            countdownRef = setInterval(() => {
+                display.innerText = `След. анализ через: ${sec--} сек`;
+                if(sec < 0) clearInterval(countdownRef);
             }, 1000);
         }
     </script>

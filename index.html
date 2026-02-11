@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Scalper: DeepSeek V3.2</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-main: #c9d1d9;
+            --accent-green: #238636;
+            --accent-red: #da3633;
+            --accent-blue: #58a6ff;
+            --accent-gold: #d29922;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Settings Panel */
+        .settings-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            color: #8b949e;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #010409;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button:active { transform: scale(0.96); opacity: 0.8; }
+
+        .btn-start { 
+            background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
+            color: white; 
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+        
+        .btn-stop { 
+            background: linear-gradient(180deg, #da3633 0%, #b62324 100%);
+            color: white;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+        
+        /* Timer */
+        .timer-display {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: var(--accent-gold);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        /* Trading Cards */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .asset-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        
+        .asset-desc {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        .asset-time {
+            font-size: 0.75rem;
+            color: #8b949e;
+            font-family: monospace;
+        }
+
+        .recommendation {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin: 12px 0;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rec-buy { background: rgba(35, 134, 54, 0.15); color: #3fb950; border: 1px solid rgba(35, 134, 54, 0.4); }
+        .rec-sell { background: rgba(218, 54, 51, 0.15); color: #f85149; border: 1px solid rgba(218, 54, 51, 0.4); }
+        .rec-wait { background: rgba(139, 148, 158, 0.15); color: #c9d1d9; border: 1px solid rgba(48, 54, 61, 0.5); }
+
+        .reasoning {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #c9d1d9;
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .levels-box {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .level-stop { color: #ff7b72; }
+        .level-take { color: #3fb950; }
+
+        /* Loader */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--accent-blue);
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #484f58;
+            margin-top: 30px;
+            padding: 10px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 DeepSeek V3.2 Scalper</h1>
+
+    <div class="settings-box">
+        <div class="input-group">
+            <label for="apiKey">OpenRouter API Key:</label>
+            <input type="password" id="apiKey" placeholder="Вставь ключ sk-or-v1-..." autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label for="modelSelect">Модель ИИ (Обновлено 2026):</label>
+            <select id="modelSelect">
+                <option value="deepseek/deepseek-v3.2" selected>DeepSeek V3.2 (Обычная / Быстрая)</option>
+                <option value="deepseek/deepseek-r1">DeepSeek R1 (Расширенная / Логика)</option>
+                <option value="deepseek/deepseek-chat">DeepSeek V3 (Старая версия)</option>
+            </select>
+        </div>
+        <div class="controls">
+            <button class="btn-start" onclick="startBot()">ЗАПУСК (5 мин)</button>
+            <button class="btn-stop" onclick="stopBot()">СТОП</button>
+        </div>
+        <div class="timer-display" id="timerStatus">🔴 Ожидание команды</div>
+    </div>
+
+    <div id="loader" class="loader">
+        📡 Спрашиваю у DeepSeek...<br>
+        <span style="font-size:0.8rem; font-weight:normal; color:#8b949e">Анализ волатильности и уровней...</span>
+    </div>
+
+    <div class="grid-container" id="cardsContainer">
+        </div>
+    
+    <div class="footer-note">
+        ⚠️ <strong>Риск-предупреждение:</strong> ИИ не видит стакан (Order Book) в реальном времени. <br>
+        Используйте эти сигналы только как подтверждение своей стратегии.
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Точные коды фьючерсов на Март 2026
+        const INSTRUMENTS = [
+            { id: 'SBRF-3.26', name: 'Сбербанк', code: 'SRH6', desc: 'Фьючерс на акции Сбера' },
+            { id: 'Si-3.26', name: 'Доллар/Рубль', code: 'SiH6', desc: 'Хедж валютных рисков' },
+            { id: 'CR-3.26', name: 'Юань/Рубль', code: 'CRH6', desc: 'Основная валюта' },
+            { id: 'SILV-3.26', name: 'Серебро', code: 'SVH6', desc: 'Агрессивный металл' },
+            { id: 'MIX-3.26', name: 'Индекс MOEX', code: 'MXH6', desc: 'Настроение рынка' }
+        ];
+
+        let timerInterval;
+        let countdownInterval;
+        let isRunning = false;
+        const UPDATE_INTERVAL_MS = 300000; // 5 минут
+
+        // --- INIT ---
+        window.onload = () => {
+            const savedKey = localStorage.getItem('openrouter_key');
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+            
+            const savedModel = localStorage.getItem('selected_model');
+            if (savedModel) document.getElementById('modelSelect').value = savedModel;
+            
+            renderInitialCards();
+        };
+
+        function renderInitialCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            INSTRUMENTS.forEach(inst => {
+                container.innerHTML += `
+                    <div class="card" id="card-${inst.code}">
+                        <div class="card-header">
+                            <div>
+                                <div class="asset-name">${inst.name}</div>
+                                <span class="asset-desc">${inst.code}</span>
+                            </div>
+                            <span class="asset-time">--:--</span>
+                        </div>
+                        <div class="recommendation rec-wait">ГОТОВНОСТЬ</div>
+                        <div class="reasoning">Ожидаю запуска системы...</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- CORE LOGIC ---
+        function startBot() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!apiKey) {
+                alert('Пожалуйста, введите API ключ!');
+                return;
+            }
+            localStorage.setItem('openrouter_key', apiKey);
+            localStorage.setItem('selected_model', document.getElementById('modelSelect').value);
+
+            if (isRunning) return;
+            isRunning = true;
+            
+            document.querySelector('.btn-start').style.opacity = '0.5';
+            document.querySelector('.btn-start').innerText = '⏳ РАБОТАЮ...';
+            
+            fetchRecommendations(); // Сразу первый запрос
+            
+            timerInterval = setInterval(fetchRecommendations, UPDATE_INTERVAL_MS);
+        }
+
+        function stopBot() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            clearInterval(countdownInterval);
+            document.getElementById('timerStatus').innerText = '⛔ Остановлено';
+            document.querySelector('.btn-start').style.opacity = '1';
+            document.querySelector('.btn-start').innerText = 'ЗАПУСК (5 мин)';
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function startCountdown(duration) {
+            clearInterval(countdownInterval);
+            let timer = duration;
+            const display = document.getElementById('timerStatus');
+            
+            countdownInterval = setInterval(() => {
+                const minutes = parseInt(timer / 60, 10);
+                const seconds = parseInt(timer % 60, 10);
+                display.innerText = `🔄 Обновление через: ${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (--timer < 0) {
+                    clearInterval(countdownInterval);
+                    display.innerText = "Обновление...";
+                }
+            }, 1000);
+        }
+
+        // --- API CALL ---
+        async function fetchRecommendations() {
+            const apiKey = document.getElementById('apiKey').value;
+            const model = document.getElementById('modelSelect').value;
+            const loader = document.getElementById('loader');
+            
+            loader.style.display = 'block';
+            document.getElementById('timerStatus').innerText = '🤖 AI анализирует рынок...';
+
+            // Промпт для ИИ
+            const prompt = `
+            Ты профессиональный трейдер на Московской Бирже (FORTS).
+            Сейчас: ${new Date().toLocaleTimeString('ru-RU')}.
+            
+            Твоя задача: Дать прогноз скальпинг-сделки на 10 минут для этих фьючерсов:
+            ${INSTRUMENTS.map(i => `${i.name} (${i.code})`).join(', ')}.
+            
+            Используй сценарный анализ, учитывая время дня (утро/обед/вечер).
+            ВНИМАНИЕ: Верни ТОЛЬКО валидный JSON массив, без текста.
+            
+            Структура:
+            [{
+                "id": "SRH6",
+                "action": "LONG" или "SHORT" или "WAIT",
+                "reason": "Короткая причина (до 10 слов)",
+                "sl": "Цена SL",
+                "tp": "Цена TP"
+            }, ...]
+            `;
+
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "https://github.com/toni-investor",
+                        "X-Title": "DeepSeekScalper"
+                    },
+                    body: JSON.stringify({
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": "You are a JSON-only trading bot. Output pure JSON without markdown blocks."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.6
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка API: ' + response.status);
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                
+                // Чистим ответ от возможного маркдауна (```json ... ```)
+                const jsonMatch = content.match(/\[[\s\S]*\]/); 
+                
+                if (jsonMatch) {
+                    const parsedData = JSON.parse(jsonMatch[0]);
+                    updateUI(parsedData);
+                } else {
+                    console.error("Некорректный JSON:", content);
+                    alert("ИИ вернул странный ответ. Попробуйте другую модель.");
+                }
+
+            } catch (error) {
+                alert('Ошибка соединения: ' + error.message);
+                stopBot();
+            } finally {
+                loader.style.display = 'none';
+                startCountdown(UPDATE_INTERVAL_MS / 1000);
+            }
+        }
+
+        // --- UI UPDATE ---
+        function updateUI(data) {
+            data.forEach(item => {
+                const card = document.getElementById(`card-${item.id}`);
+                if (!card) return;
+
+                let actionClass = 'rec-wait';
+                let actionText = 'НАБЛЮДЕНИЕ';
+                const act = item.action.toUpperCase();
+
+                if (act.includes('LONG') || act.includes('BUY')) {
+                    actionClass = 'rec-buy';
+                    actionText = 'ПОКУПАТЬ 🚀';
+                } else if (act.includes('SHORT') || act.includes('SELL')) {
+                    actionClass = 'rec-sell';
+                    actionText = 'ПРОДАВАТЬ 🔻';
+                }
+
+                // Анимация обновления
+                card.style.opacity = '0.5';
+                setTimeout(() => card.style.opacity = '1', 300);
+
+                card.querySelector('.asset-time').innerText = new Date().toLocaleTimeString().slice(0,5);
+                const recEl = card.querySelector('.recommendation');
+                recEl.className = `recommendation ${actionClass}`;
+                recEl.innerText = actionText;
+                
+                card.querySelector('.reasoning').innerHTML = `
+                    ${item.reason}
+                    <div class="levels-box">
+                        <span class="level-stop">SL: ${item.sl}</span>
+                        <span class="level-take">TP: ${item.tp}</span>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

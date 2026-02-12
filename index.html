@@ -3,77 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI ТРЕЙДЕР v16.0 (ULTIMATE)</title>
+    <title>AI ТРЕЙДЕР v17.0 (REAL NEWS)</title>
     <style>
-        :root { 
-            --bg: #050505; --card: #141414; --text: #e0e0e0; 
-            --green: #00ff41; --red: #ff1a1a; --gold: #ffd700; --blue: #00f0ff;
-        }
+        :root { --bg: #050505; --card: #121212; --text: #e0e0e0; --green: #00ff41; --red: #ff1a1a; --blue: #00f0ff; --gold: #ffd700; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; padding-bottom: 100px; }
         
-        h1 { text-align: center; color: var(--blue); margin: 15px 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { text-align: center; color: var(--gold); margin: 15px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Настройки */
-        .settings { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box;}
+        /* Панель новостей */
+        .news-ticker {
+            background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px; font-size: 0.8rem; color: #aaa;
+            height: 60px; overflow-y: auto; border-left: 3px solid var(--blue);
+        }
+        .news-item { border-bottom: 1px solid #222; padding: 4px 0; }
+
+        .settings { background: #0a0a0a; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box;}
         
         button { 
-            width: 100%; padding: 14px; background: linear-gradient(45deg, var(--blue), #0088ff); 
+            width: 100%; padding: 14px; background: linear-gradient(45deg, var(--gold), #ff8800); 
             color: #000; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase;
         }
         button:disabled { background: #333; color: #666; }
 
-        /* Карточки */
         .card { background: var(--card); border: 1px solid #222; margin-bottom: 12px; padding: 12px; border-radius: 8px; position: relative; }
-        
-        /* Золотая рамка для Снайпера (Совпадение Новостей + Техники) */
-        .sniper-mode { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); }
+        .sniper-mode { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .asset-name { font-weight: bold; font-size: 1rem; color: #fff; }
         .price { font-family: monospace; font-size: 1.1rem; font-weight: bold; }
         
-        /* Блок P&L (Прибыль и Цель) */
+        /* Статистика */
         .stats-row { display: flex; justify-content: space-between; background: #000; padding: 8px; border-radius: 6px; margin: 10px 0; border: 1px solid #222; }
         .stat-box { width: 48%; text-align: center; }
         .stat-label { font-size: 0.65rem; color: #666; text-transform: uppercase; }
         .stat-val { font-family: monospace; font-weight: bold; font-size: 1rem; }
         
-        .val-green { color: var(--green); }
-        .val-red { color: var(--red); }
-        .val-blue { color: var(--blue); }
-        .val-gray { color: #444; }
+        .val-green { color: var(--green); } .val-red { color: var(--red); } .val-blue { color: var(--blue); }
 
         /* Сигналы */
         .signal-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .badge { padding: 5px 10px; font-weight: 900; border-radius: 4px; font-size: 0.85rem; text-transform: uppercase; }
-        .b-buy { background: var(--green); color: #000; }
-        .b-sell { background: var(--red); color: #fff; }
-        .b-wait { background: #333; color: #777; border: 1px solid #444; }
+        .b-buy { background: var(--green); color: #000; } .b-sell { background: var(--red); color: #fff; } .b-wait { background: #333; color: #777; }
 
         .progress-bg { height: 4px; background: #222; width: 100%; border-radius: 2px; }
         .progress-fill { height: 100%; transition: width 0.5s; }
 
         .ai-reason { font-size: 0.75rem; color: #999; margin-top: 8px; line-height: 1.3; }
-        .levels { display: flex; justify-content: space-between; font-size: 0.75rem; color: #555; margin-top: 5px; font-family: monospace; }
-
         .status-bar { text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>AI TRADER v16.0 (ULTIMATE)</h1>
+    <h1>AI NEWS TRADER v17.0</h1>
 
     <div class="settings">
         <input type="password" id="apiKey" placeholder="API Ключ OpenRouter">
         
-        <select id="newsSentiment">
-            <option value="NEUTRAL">⚖️ Фон: Нейтральный (Только Техника)</option>
-            <option value="POSITIVE">🚀 Фон: Позитив (Только BUY)</option>
-            <option value="NEGATIVE">🩸 Фон: Негатив (Только SELL)</option>
-        </select>
+        <div id="newsContainer" class="news-ticker">
+            Загрузка заголовков новостей...
+        </div>
 
-        <button class="btn-start" onclick="startSystem()">ЗАПУСТИТЬ</button>
+        <button class="btn-start" onclick="startSystem()">АВТО-ТОРГОВЛЯ</button>
         <div id="timerDisplay" class="status-bar">Система готова</div>
     </div>
 
@@ -86,20 +77,14 @@
             { code: 'SRH6', name: 'СБЕР', desc: 'SBER' },
             { code: 'SiH6', name: 'Si (USD)', desc: 'Si-3.26' },
             { code: 'CRH6', name: 'ЮАНЬ', desc: 'CNY' },
-            { code: 'EuH6', name: 'ЕВРО', desc: 'Eu-3.26' },
             { code: 'GDH6', name: 'ЗОЛОТО', desc: 'GOLD' },
             { code: 'BRH6', name: 'НЕФТЬ', desc: 'BRENT' },
-            { code: 'NGH6', name: 'ГАЗ', desc: 'GAS' },
-            { code: 'WHH6', name: 'ПШЕНИЦА', desc: 'WHEAT' }, // Сложный актив (v8 fix)
             { code: 'MXH6', name: 'ИНДЕКС', desc: 'IMOEX' },
-            { code: 'CCH6', name: 'КАКАО', desc: 'COCOA' },   // Сложный актив (v8 fix)
-            { code: 'KCH6', name: 'КОФЕ', desc: 'COFFEE' }    // Сложный актив (v8 fix)
+            { code: 'WHH6', name: 'ПШЕНИЦА', desc: 'WHEAT' }
         ];
 
-        let state = { market: {}, signals: {} };
-        // Загружаем сохраненные точки входа (v13 fix)
-        let savedEntries = JSON.parse(localStorage.getItem('ai_trader_v16_entries')) || {};
-        
+        let state = { market: {}, signals: {}, news: [] };
+        let savedEntries = JSON.parse(localStorage.getItem('ai_trader_v17_entries')) || {};
         let timerRef, countdownRef;
 
         window.onload = () => {
@@ -113,86 +98,113 @@
             localStorage.setItem('or_key', key);
             
             document.querySelector('.btn-start').disabled = true;
-            document.querySelector('.btn-start').innerText = 'РАБОТАЕТ...';
+            document.querySelector('.btn-start').innerText = 'AI АНАЛИЗИРУЕТ РЫНОК...';
             
             runCycle();
-            timerRef = setInterval(runCycle, 120000); // 2 минуты
+            timerRef = setInterval(runCycle, 180000); // 3 минуты (чтобы новости успели обновиться)
         }
 
         async function runCycle() {
-            document.getElementById('timerDisplay').innerText = '🔄 Обновление данных...';
-            await fetchMoex();
-            await askAI();
+            document.getElementById('timerDisplay').innerText = '📰 Скачиваю новости...';
+            await fetchRealNews(); // 1. Качаем новости
+            
+            document.getElementById('timerDisplay').innerText = '📊 Скачиваю цены...';
+            await fetchMoex(); // 2. Качаем цены
+            
+            document.getElementById('timerDisplay').innerText = '🧠 ИИ думает...';
+            await askAI(); // 3. Анализируем всё вместе
+            
             renderGrid();
-            startCountdown(120);
+            startCountdown(180);
         }
 
-        // --- 1. Сбор данных (с защитой от неликвида v8) ---
+        // --- 1. ФУНКЦИЯ ПОЛУЧЕНИЯ РЕАЛЬНЫХ НОВОСТЕЙ (RBC ECONOMICS) ---
+        async function fetchRealNews() {
+            try {
+                // Используем публичный прокси rss2json для обхода CORS
+                // Источник: РБК Экономика (один из самых быстрых по РФ)
+                const rssUrl = 'https://rssexport.rbc.ru/rbcnews/news/20/full.rss';
+                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+                
+                const res = await fetch(apiUrl);
+                const json = await res.json();
+                
+                if(json.items && json.items.length > 0) {
+                    // Берем топ-5 последних заголовков
+                    state.news = json.items.slice(0, 5).map(item => item.title);
+                    
+                    // Отображаем в интерфейсе
+                    const container = document.getElementById('newsContainer');
+                    container.innerHTML = state.news.map(t => `<div class="news-item">• ${t}</div>`).join('');
+                }
+            } catch(e) {
+                console.error("Ошибка новостей:", e);
+                state.news = ["Не удалось загрузить новости. Считаем фон нейтральным."];
+            }
+        }
+
+        // --- 2. MOEX DATA ---
         async function fetchMoex() {
             for (let a of ASSETS) {
                 try {
                     const res = await fetch(`https://iss.moex.com/iss/engines/futures/markets/forts/securities/${a.code}.json`);
                     const json = await res.json();
-                    
-                    const getVal = (source, names) => {
-                        if(!source || !source.data[0]) return null;
-                        for(let name of names) {
-                            let idx = source.columns.indexOf(name);
-                            if(idx > -1 && source.data[0][idx] != null) return source.data[0][idx];
-                        }
+                    const getVal = (s, n) => {
+                        if(!s || !s.data[0]) return null;
+                        for(let x of n) { let i = s.columns.indexOf(x); if(i>-1 && s.data[0][i]!=null) return s.data[0][i]; }
                         return null;
                     };
 
-                    // Ищем цену везде: Сделки -> Теоретическая -> Вчерашняя
-                    let price = getVal(json.marketdata, ['LAST', 'THEORPRICE']) || 
-                                getVal(json.securities, ['PREVPRICE', 'THEORPRICE']);
-                    
+                    let price = getVal(json.marketdata, ['LAST','THEORPRICE']) || getVal(json.securities, ['PREVPRICE']);
                     let open = getVal(json.marketdata, ['OPEN']) || getVal(json.securities, ['OPEN']);
-                    if(!open) open = price; // Фолбэк
-
-                    let high = getVal(json.marketdata, ['HIGH']) || price;
-                    let low = getVal(json.marketdata, ['LOW']) || price;
+                    if(!open) open = price;
                     
-                    // Расчет Пивота (v14 Sniper math)
-                    let pivot = (high + low + price) / 3;
+                    let high = getVal(json.marketdata,['HIGH'])||price;
+                    let low = getVal(json.marketdata,['LOW'])||price;
+                    let pivot = (high+low+price)/3;
 
-                    state.market[a.code] = { price: price || 0, open: open || 0, pivot };
-                } catch(e) { console.error(e); }
+                    state.market[a.code] = { price: price||0, open: open||0, pivot };
+                } catch(e){}
             }
         }
 
-        // --- 2. Анализ ИИ (с учетом Новостей v15) ---
+        // --- 3. AI ANALYSIS (Цены + Реальные Заголовки) ---
         async function askAI() {
             const key = document.getElementById('apiKey').value;
-            const news = document.getElementById('newsSentiment').value;
+            
+            // Собираем текст новостей в одну строку для промпта
+            const newsBlock = state.news.join(". ");
 
             const promptData = ASSETS.map(a => {
                 const m = state.market[a.code];
                 if(!m.price) return null;
                 
-                // Математический пре-анализ
+                // Технический пре-анализ
                 let tech = "NEUTRAL";
-                if(m.price > m.open && m.price > m.pivot) tech = "STRONG_BUY";
-                if(m.price < m.open && m.price < m.pivot) tech = "STRONG_SELL";
+                if(m.price > m.open && m.price > m.pivot) tech = "UP_TREND";
+                if(m.price < m.open && m.price < m.pivot) tech = "DOWN_TREND";
                 
-                // Передаем статус входа (если уже в сделке)
                 const entry = savedEntries[a.code] || 0;
-                
-                return `ID:${a.code} | P:${m.price} | O:${m.open} | PVT:${m.pivot.toFixed(1)} | TECH:${tech} | ENTRY:${entry}`;
+                return `ID:${a.code} | Price:${m.price} | Tech:${tech} | Entry:${entry}`;
             }).join('\n');
 
             const systemPrompt = `
-            Ты Трейдер-Бот (Русский язык).
-            ВХОД: Технический анализ + Пользовательский Фон: "${news}".
+            Ты AI-Трейдер.
+            
+            ВОТ ПОСЛЕДНИЕ НОВОСТИ (РФ/МИР):
+            "${newsBlock}"
+            
+            ТВОЯ ЗАДАЧА:
+            1. Оцени сентимент новостей (0-100, где 0=Паника, 50=Нейтрально, 100=Эйфория).
+            2. Сопоставь новости с Техническим анализом.
             
             ПРАВИЛА:
-            1. Фон NEGATIVE: Запрет BUY. Только SELL или WAIT.
-            2. Фон POSITIVE: Запрет SELL. Только BUY или WAIT.
-            3. Если TECH=STRONG_BUY и Фон=POSITIVE -> Вероятность 90-95%.
-            4. Если уже есть ENTRY (позиция открыта), дай совет: HOLD или CLOSE.
-            5. Дай TP (Цель) на расстоянии 0.4%-0.8% от цены.
+            - Если новости ПЛОХИЕ (санкции, ставки ЦБ, падение нефти), БЛОКИРУЙ сигналы BUY.
+            - Если новости ХОРОШИЕ, БЛОКИРУЙ сигналы SELL.
+            - СНАЙПЕРСКИЙ СИГНАЛ: Если Техника=UP и Новости=GOOD (или Техника=DOWN и Новости=BAD).
             
-            JSON: [{ "id": "код", "action": "ПОКУПАТЬ/ПРОДАВАТЬ/ЖДАТЬ/ДЕРЖАТЬ", "prob": 0-100, "reason": "текст", "tp": цена }]
+            JSON FORMAT:
+            [{ "id": "код", "action": "ПОКУПАТЬ/ПРОДАВАТЬ/ЖДАТЬ/ДЕРЖАТЬ", "prob": 0-100, "reason": "анализ новости + техники", "tp": цена }]
             `;
 
             try {
@@ -202,7 +214,7 @@
                     body: JSON.stringify({
                         model: "deepseek/deepseek-v3.2",
                         messages: [{role:"system", content:systemPrompt}, {role:"user", content:promptData}],
-                        temperature: 0.2
+                        temperature: 0.1
                     })
                 });
 
@@ -216,29 +228,26 @@
                     const prev = state.signals[s.id] ? state.signals[s.id].action : 'ЖДАТЬ';
                     const currPrice = state.market[s.id].price;
                     
-                    // --- ЛОГИКА ПАМЯТИ (v13 Persistence) ---
-                    // Если новый вход -> Сохраняем цену
+                    // Сохранение входа (Persistence)
                     if((s.action.includes('ПОКУП') || s.action.includes('ПРОДА')) && !s.action.includes('ДЕРЖАТЬ')) {
                         if(prev !== s.action) {
                             savedEntries[s.id] = currPrice;
                             alert = true;
                         }
-                    }
-                    // Если выход -> Сбрасываем
-                    else if(s.action === 'ЖДАТЬ') {
+                    } else if(s.action === 'ЖДАТЬ') {
                         savedEntries[s.id] = null;
                     }
                     
                     state.signals[s.id] = s;
                 });
                 
-                localStorage.setItem('ai_trader_v16_entries', JSON.stringify(savedEntries));
+                localStorage.setItem('ai_trader_v17_entries', JSON.stringify(savedEntries));
                 if(alert) document.getElementById('alertSound').play().catch(()=>{});
 
             } catch(e) { console.error(e); }
         }
 
-        // --- 3. Рендер (Гибридный UI v13 + v15) ---
+        // --- RENDER ---
         function renderGrid() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
@@ -246,58 +255,47 @@
             ASSETS.forEach(a => {
                 const s = state.signals[a.code] || { action: 'ЖДАТЬ', prob: 0, reason: 'Загрузка...' };
                 const m = state.market[a.code];
-                const entry = savedEntries[a.code]; // Берем из памяти
+                const entry = savedEntries[a.code]; 
 
                 if(!m.price) return;
 
-                // 1. Расчет P&L (v13 logic)
+                // P&L Logic
                 let pnlText = "0.00%";
                 let pnlClass = "val-gray";
                 if(entry && entry > 0) {
                     let pnl = 0;
                     if(s.action.includes('ПОКУП') || s.action.includes('ДЕРЖАТЬ')) pnl = ((m.price - entry)/entry)*100;
-                    if(s.action.includes('ПРОДА')) pnl = ((entry - m.price)/entry)*100; // Шорт
+                    if(s.action.includes('ПРОДА')) pnl = ((entry - m.price)/entry)*100;
                     
                     pnlText = (pnl>0?'+':'') + pnl.toFixed(2) + '%';
                     pnlClass = pnl >= 0 ? 'val-green' : 'val-red';
                 }
 
-                // 2. Расчет Target (v13 logic)
-                let targetText = "---";
-                if(s.tp > 0) {
-                    let diff = Math.abs(((s.tp - m.price)/m.price)*100);
-                    targetText = diff.toFixed(2) + '%';
-                }
-
-                // Цвета
+                // Styles
                 let badgeClass = 'b-wait';
                 let barColor = '#333';
-                if(s.action.includes('ПОКУП') || s.action.includes('ДЕРЖАТЬ')) { badgeClass = 'b-buy'; barColor = 'var(--green)'; }
+                if(s.action.includes('ПОКУП')) { badgeClass = 'b-buy'; barColor = 'var(--green)'; }
                 if(s.action.includes('ПРОДА')) { badgeClass = 'b-sell'; barColor = 'var(--red)'; }
 
-                // Снайперский режим (v14 logic)
-                const isSniper = s.prob >= 90;
+                const isSniper = s.prob >= 85;
                 const sniperClass = isSniper ? 'sniper-mode' : '';
 
                 grid.innerHTML += `
                     <div class="card ${sniperClass}">
                         <div class="header">
-                            <div>
-                                <div class="asset-name">${a.name}</div>
-                                <div style="font-size:0.65rem; color:#666">${a.code}</div>
-                            </div>
+                            <div class="asset-name">${a.name}</div>
                             <div class="price">${m.price}</div>
                         </div>
 
                         <div class="stats-row">
                             <div class="stat-box">
-                                <div class="stat-label">ВАШ P&L</div>
+                                <div class="stat-label">ПРИБЫЛЬ</div>
                                 <div class="stat-val ${pnlClass}">${pnlText}</div>
                             </div>
                             <div style="width:1px; background:#222"></div>
                             <div class="stat-box">
-                                <div class="stat-label">К ЦЕЛИ</div>
-                                <div class="stat-val val-blue">${targetText}</div>
+                                <div class="stat-label">ЦЕЛЬ</div>
+                                <div class="stat-val val-blue">${s.tp || '---'}</div>
                             </div>
                         </div>
 
@@ -311,13 +309,8 @@
                         </div>
 
                         <div class="ai-reason">
-                            ${isSniper ? '🔥 <b>СНАЙПЕР:</b> ' : ''}
+                            ${isSniper ? '🔥 <b>НОВОСТИ + ТЕХНИКА:</b> ' : ''}
                             ${s.reason}
-                        </div>
-                        
-                        <div class="levels">
-                            <span>Вход: ${entry ? entry.toFixed(1) : '-'}</span>
-                            <span style="color:var(--blue)">TP: ${s.tp || '-'}</span>
                         </div>
                     </div>
                 `;
@@ -328,7 +321,7 @@
             clearInterval(countdownRef);
             const el = document.getElementById('timerDisplay');
             countdownRef = setInterval(() => {
-                el.innerText = `Сканирование через: ${sec--} сек`;
+                el.innerText = `След. анализ новостей через: ${sec--} сек`;
                 if(sec < 0) clearInterval(countdownRef);
             }, 1000);
         }

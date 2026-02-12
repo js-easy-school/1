@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Trader v8.0 (Smart Sound)</title>
+    <title>AI Trader v8.2 (P&L Tracker)</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -91,7 +91,11 @@
         .grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: 1fr 1fr; }
         }
 
         .card {
@@ -108,17 +112,17 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         
-        .asset-name { font-weight: bold; font-size: 1rem; color: #fff; }
-        .asset-code { font-size: 0.7rem; color: #666; font-family: monospace; }
+        .asset-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
+        .asset-code { font-size: 0.65rem; color: #666; font-family: monospace; }
         
         .price-box { text-align: right; }
-        .price-current { font-size: 1.1rem; font-weight: bold; font-family: monospace; }
-        .price-change { font-size: 0.75rem; font-weight: bold; }
+        .price-current { font-size: 1rem; font-weight: bold; font-family: monospace; }
+        .price-change { font-size: 0.7rem; font-weight: bold; }
 
-        /* Signal & Probability */
+        /* Signal & PnL Row */
         .signal-row {
             display: flex;
             justify-content: space-between;
@@ -128,32 +132,50 @@
 
         .signal-badge {
             background: #111;
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 5px 10px;
+            border-radius: 4px;
             font-weight: 900;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             border: 1px solid #333;
-            min-width: 80px;
+            min-width: 60px;
             text-align: center;
         }
 
         .sig-buy { color: var(--accent-green); border-color: var(--accent-green); background: rgba(0,255,102,0.1); }
         .sig-sell { color: var(--accent-red); border-color: var(--accent-red); background: rgba(255,51,51,0.1); }
         .sig-wait { color: #888; border-color: #444; }
-        
-        .probability-box {
-            text-align: right;
+
+        /* P&L Tag */
+        .pnl-tag {
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #000;
+            min-width: 60px;
+            text-align: center;
+            display: none; /* Скрыт по умолчанию */
         }
-        .prob-val { font-size: 1.2rem; font-weight: bold; font-family: monospace; }
-        .prob-label { font-size: 0.6rem; color: #666; text-transform: uppercase; }
+        .pnl-green { color: #00ff66; border: 1px solid #004411; background: rgba(0,255,102,0.05); }
+        .pnl-red { color: #ff3333; border: 1px solid #441111; background: rgba(255,51,51,0.05); }
+        
+        /* Probability small */
+        .prob-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
 
         /* Progress Bar */
         .progress-bg {
             height: 4px;
             background: #222;
             border-radius: 2px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             overflow: hidden;
         }
         .progress-fill {
@@ -163,16 +185,16 @@
             transition: width 0.5s ease;
         }
 
-        .ai-reason { font-size: 0.8rem; color: #ccc; line-height: 1.3; margin-bottom: 8px; }
+        .ai-reason { font-size: 0.75rem; color: #ccc; line-height: 1.2; margin-bottom: 5px; }
 
         .levels {
             display: flex;
             justify-content: space-between;
             font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: bold;
             background: #000;
-            padding: 6px;
+            padding: 4px;
             border-radius: 4px;
         }
         
@@ -186,7 +208,7 @@
 </head>
 <body>
 
-    <h1>AI TRADER v8.0 (SILENT FILTER)</h1>
+    <h1>AI TRADER v8.2 (P&L TRACKER)</h1>
 
     <div class="settings-panel">
         <div class="input-group">
@@ -208,14 +230,14 @@
     </div>
 
     <div id="loader" class="loader">
-        📡 Сканирую MOEX...<br>
-        🧠 Фильтрую сигналы (50%+)...
+        📡 Сканирую рынки...<br>
+        🧠 Считаю прибыль/убыток...
     </div>
     <div class="grid" id="cards"></div>
     
     <div class="warning-text">
-        ⚠️ Звук сработает ТОЛЬКО при смене сигнала<br>
-        с вероятностью ВЫШЕ 50%.
+        ⚠️ P&L считается от момента появления сигнала.<br>
+        При смене сигнала (напр. Buy -> Sell) расчет сбрасывается.
     </div>
 
     <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
@@ -231,11 +253,14 @@
             { code: 'BRH6', name: 'Нефть', desc: 'BR-3.26' },
             { code: 'NGH6', name: 'Газ', desc: 'NG-3.26' },
             { code: 'WHH6', name: 'Пшеница', desc: 'WHEAT-3.26' },
-            { code: 'MXH6', name: 'Индекс', desc: 'MIX-3.26' }
+            { code: 'MXH6', name: 'Индекс', desc: 'MIX-3.26' },
+            { code: 'CCH6', name: 'Какао', desc: 'COCOA-3.26' },
+            { code: 'KCH6', name: 'Кофе', desc: 'COFFEE-3.26' }
         ];
 
         let marketData = {};
         let previousSignals = {};
+        let entryPrices = {}; // Хранилище цен входа
         let intervalRef = null;
         let countdownRef = null;
         let wakeLock = null;
@@ -267,17 +292,19 @@
                         
                         <div class="signal-row">
                             <div class="signal-badge sig-wait" id="sig-${a.code}">WAIT</div>
-                            <div class="probability-box">
-                                <div class="prob-val" id="prob-${a.code}">0%</div>
-                                <div class="prob-label">ВЕРОЯТНОСТЬ</div>
-                            </div>
+                            <div class="pnl-tag" id="pnl-${a.code}">0.00%</div>
+                        </div>
+                        
+                        <div class="prob-row">
+                            <span>Вероятность:</span>
+                            <span id="prob-${a.code}">0%</span>
                         </div>
                         
                         <div class="progress-bg">
                             <div class="progress-fill" id="bar-${a.code}"></div>
                         </div>
 
-                        <div class="ai-reason" id="r-${a.code}">Нажмите СТАРТ для анализа...</div>
+                        <div class="ai-reason" id="r-${a.code}">Жду старт...</div>
                     </div>
                 `;
             });
@@ -313,10 +340,12 @@
         function stopCycle() {
             clearInterval(intervalRef);
             clearInterval(countdownRef);
+            entryPrices = {}; // Сброс входов при стопе
             if(wakeLock) wakeLock.release();
             document.querySelector('.btn-start').disabled = false;
             document.querySelector('.btn-start').innerText = 'СТАРТ';
             document.getElementById('timerDisplay').innerText = 'Остановлено';
+            renderGrid(); // Сброс UI
         }
 
         async function runAnalysis() {
@@ -333,29 +362,54 @@
                     const url = `https://iss.moex.com/iss/engines/futures/markets/forts/securities/${asset.code}.json`;
                     const res = await fetch(url);
                     const json = await res.json();
-                    const data = json.marketdata.data[0];
-                    const cols = json.marketdata.columns;
-                    const getVal = (k) => data[cols.indexOf(k)];
                     
+                    const getValue = (block, colName) => {
+                        if (!block || !block.data || !block.data.length) return null;
+                        const idx = block.columns.indexOf(colName);
+                        return idx !== -1 ? block.data[0][idx] : null;
+                    };
+
+                    let price = getValue(json.marketdata, 'LAST');
+                    let change = getValue(json.marketdata, 'LASTCHANGEPRCNT');
+                    let high = getValue(json.marketdata, 'HIGH');
+                    let low = getValue(json.marketdata, 'LOW');
+
+                    if (price == null) {
+                        price = getValue(json.securities, 'PREVPRICE');
+                        if(change == null) change = 0;
+                    }
+
+                    if (!price) price = 0;
+                    if (!change) change = 0;
+                    if (!high) high = price; 
+                    if (!low) low = price;
+
                     marketData[asset.code] = {
-                        price: getVal('LAST') || 0,
-                        change: getVal('LASTCHANGEPRCNT') || 0,
-                        high: getVal('HIGH') || 0,
-                        low: getVal('LOW') || 0
+                        price: price,
+                        change: change,
+                        high: high,
+                        low: low
                     };
                     updatePriceUI(asset.code);
+
                 } catch (e) {
+                    console.error(`Error fetching ${asset.code}:`, e);
                     marketData[asset.code] = { price: 0, change: 0, high: 0, low: 0 };
+                    updatePriceUI(asset.code);
                 }
             }
         }
 
         function updatePriceUI(code) {
             const d = marketData[code];
-            document.getElementById(`p-${code}`).innerText = d.price;
+            const pEl = document.getElementById(`p-${code}`);
+            if(pEl) pEl.innerText = d.price;
+            
             const cEl = document.getElementById(`c-${code}`);
-            cEl.innerText = d.change + '%';
-            cEl.style.color = d.change >= 0 ? '#00ff66' : '#ff3333';
+            if(cEl) {
+                cEl.innerText = d.change + '%';
+                cEl.style.color = d.change >= 0 ? '#00ff66' : '#ff3333';
+            }
         }
 
         async function askDeepSeek() {
@@ -366,13 +420,12 @@
                 const d = marketData[a.code];
                 if(d.price === 0) return `${a.name}: Нет данных`;
                 
-                // Расчет позиции в канале
                 let rangeInfo = "";
                 if (d.high > 0 && d.low > 0) {
                     const range = d.high - d.low;
                     if (range > 0) {
                         const pos = ((d.price - d.low) / range) * 100;
-                        rangeInfo = `Position: ${pos.toFixed(1)}% (0=Low, 100=High).`;
+                        rangeInfo = `Range Pos: ${pos.toFixed(1)}%`;
                     }
                 }
                 return `${a.name} (${a.code}): Price=${d.price}, Change=${d.change}%, ${rangeInfo}`;
@@ -380,22 +433,22 @@
 
             const prompt = `
             Ты Трейдер-Бот. Оцени ВЕРОЯТНОСТЬ сигнала (0-100%).
-            ВХОД:
+            
+            ДАННЫЕ:
             ${promptData}
             
-            ПРАВИЛА ОЦЕНКИ:
-            - Вероятность < 50% = ШУМ (WAIT)
-            - Вероятность > 70% = СИЛЬНЫЙ СИГНАЛ (BUY/SELL)
-            - Вероятность > 90% = ЖЕЛЕЗНО (Уровни пробиты)
+            СТРАТЕГИЯ:
+            1. Change ~0% и Range Pos ~50% -> WAIT.
+            2. Prob > 70% для входа.
             
-            JSON:
+            JSON ONLY:
             [{
                 "id": "SRH6",
-                "action": "BUY/SELL/WAIT/CLOSE",
-                "probability": число,
-                "reason": "Анализ",
-                "sl": "число",
-                "tp": "число"
+                "action": "BUY/SELL/WAIT",
+                "probability": number,
+                "reason": "Short reason",
+                "sl": "price",
+                "tp": "price"
             }, ...]
             `;
 
@@ -409,7 +462,7 @@
                     body: JSON.stringify({
                         "model": model,
                         "messages": [{"role": "user", "content": prompt}],
-                        "temperature": 0.5
+                        "temperature": 0.4
                     })
                 });
 
@@ -434,21 +487,51 @@
                 const probVal = document.getElementById(`prob-${s.id}`);
                 const bar = document.getElementById(`bar-${s.id}`);
                 const reason = document.getElementById(`r-${s.id}`);
+                const pnlTag = document.getElementById(`pnl-${s.id}`);
 
                 if(!badge) return;
 
-                // --- ГЛАВНОЕ ИЗМЕНЕНИЕ ---
-                // Уведомляем только если вероятность > 50%
-                const oldAction = previousSignals[s.id] || "";
+                const oldAction = previousSignals[s.id] || "WAIT";
+                const currentPrice = marketData[s.id].price;
                 
+                // 1. ЛОГИКА P&L (Entry Price)
+                if (s.action === 'BUY' || s.action === 'SELL') {
+                    // Если это новый сигнал или смена направления -> Запоминаем точку входа
+                    if (oldAction !== s.action || !entryPrices[s.id]) {
+                        entryPrices[s.id] = currentPrice;
+                    }
+                } else {
+                    // Если WAIT -> Сбрасываем точку входа
+                    entryPrices[s.id] = null;
+                }
+
+                // 2. РАСЧЕТ ПРОЦЕНТА ПРИБЫЛИ
+                if (entryPrices[s.id] && currentPrice > 0) {
+                    let pnl = 0;
+                    if (s.action === 'BUY') {
+                        pnl = ((currentPrice - entryPrices[s.id]) / entryPrices[s.id]) * 100;
+                    } else if (s.action === 'SELL') {
+                        pnl = ((entryPrices[s.id] - currentPrice) / entryPrices[s.id]) * 100;
+                    }
+
+                    pnlTag.style.display = 'block';
+                    pnlTag.innerText = (pnl > 0 ? '+' : '') + pnl.toFixed(2) + '%';
+                    
+                    pnlTag.className = 'pnl-tag';
+                    if (pnl >= 0) pnlTag.classList.add('pnl-green');
+                    else pnlTag.classList.add('pnl-red');
+                } else {
+                    pnlTag.style.display = 'none';
+                }
+
+                // 3. УВЕДОМЛЕНИЯ
                 if(oldAction !== s.action && s.probability > 50) {
                     hasChanges = true;
-                    notifyText += `${s.id}: ${s.action} (${s.probability}%) `;
+                    notifyText += `${s.id}: ${s.action} `;
                 }
                 previousSignals[s.id] = s.action;
-                // --------------------------
 
-                // UI
+                // 4. UI UPDATE
                 badge.innerText = s.action;
                 badge.className = 'signal-badge';
                 
@@ -459,21 +542,16 @@
                 } else if(s.action.includes('SELL')) {
                     badge.classList.add('sig-sell');
                     color = '#ff3333';
-                } else if(s.action.includes('CLOSE')) {
-                    badge.innerText = 'FIX';
-                    badge.style.color = '#ffcc00';
-                    badge.style.borderColor = '#ffcc00';
-                    color = '#ffcc00';
                 } else {
                     badge.classList.add('sig-wait');
                 }
 
                 probVal.innerText = s.probability + '%';
-                probVal.style.color = s.probability > 50 ? color : '#666'; // Тусклый если <= 50%
+                probVal.style.color = s.probability > 50 ? color : '#666';
                 
                 bar.style.width = s.probability + '%';
                 bar.style.backgroundColor = color;
-                if(s.probability <= 50) bar.style.backgroundColor = '#333'; // Серый бар
+                if(s.probability <= 50) bar.style.backgroundColor = '#333';
 
                 reason.innerHTML = `
                     ${s.reason}
@@ -486,7 +564,7 @@
 
             if(hasChanges && notifyText.length > 0) {
                 if(soundEnabled) document.getElementById('alertSound').play().catch(()=>{});
-                sendNotification("СИЛЬНЫЙ СИГНАЛ (>50%)", notifyText);
+                sendNotification("AI TRADER", notifyText);
             }
         }
 

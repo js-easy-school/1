@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI SCALPER v11.0 (M5/M15)</title>
+    <title>AI TRADER v13.0 (ULTIMATE)</title>
     <style>
         :root {
             --bg-color: #000000;
-            --card-bg: #111111;
+            --card-bg: #101010;
             --text-main: #e0e0e0;
             --neon-green: #39ff14;
-            --neon-red: #ff073a;
+            --neon-red: #ff003c;
             --neon-blue: #00f9ff;
             --neon-yellow: #fff01f;
-            --border: #333;
+            --border: #222;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 8px;
-            padding-bottom: 100px;
+            padding-bottom: 120px;
         }
 
         h1 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: center;
             color: var(--neon-blue);
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(0, 249, 255, 0.5);
+            text-shadow: 0 0 10px rgba(0, 249, 255, 0.4);
         }
 
         /* Controls */
         .settings-panel {
             background: #0a0a0a;
-            border: 1px solid #222;
+            border: 1px solid #333;
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 15px;
@@ -52,9 +52,11 @@
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 4px;
+            font-size: 0.9rem;
+            outline: none;
         }
 
-        .controls { display: flex; gap: 5px; }
+        .controls { display: flex; gap: 8px; }
         
         button {
             border: none;
@@ -64,17 +66,18 @@
             padding: 12px;
             cursor: pointer;
             flex: 1;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            transition: 0.2s;
         }
         
-        .btn-start { background: var(--neon-green); color: #000; box-shadow: 0 0 10px rgba(57, 255, 20, 0.3); }
+        .btn-start { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
         .btn-stop { background: #333; color: #fff; }
         
         /* Grid */
         .grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         @media (min-width: 600px) { .grid { grid-template-columns: 1fr 1fr; } }
 
@@ -83,7 +86,7 @@
             background: var(--card-bg);
             border: 1px solid #222;
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px;
             position: relative;
         }
 
@@ -91,101 +94,107 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 0.9rem;
+            align-items: center;
         }
-        .asset-code { color: #666; font-size: 0.7rem; }
-        .price { font-family: monospace; font-weight: bold; font-size: 1.1rem; }
+        
+        .asset-code { font-weight: bold; font-size: 0.95rem; color: #fff; }
+        .asset-desc { color: #666; font-size: 0.65rem; font-family: monospace; }
+        
+        .price { font-family: monospace; font-weight: bold; font-size: 1rem; color: #fff; }
+        .change { font-size: 0.7rem; font-weight: bold; text-align: right;}
 
-        /* Scalp Indicators */
-        .scalp-row {
+        /* STATS ROW (The Hybrid Part) */
+        .stats-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
             background: #050505;
             padding: 8px;
             border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #1a1a1a;
         }
 
+        .stat-box { text-align: center; width: 48%; }
+        .stat-label { font-size: 0.6rem; color: #666; text-transform: uppercase; }
+        .stat-val { font-family: monospace; font-weight: bold; font-size: 1rem; }
+        
+        .val-green { color: var(--neon-green); }
+        .val-red { color: var(--neon-red); }
+        .val-blue { color: var(--neon-blue); }
+        .val-gray { color: #444; }
+
+        /* Badge & Bar */
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
         .badge {
             font-weight: 900;
-            font-size: 1rem;
+            font-size: 0.9rem;
             padding: 4px 8px;
             border-radius: 2px;
             text-transform: uppercase;
         }
-        .b-buy { color: var(--neon-green); border: 1px solid var(--neon-green); box-shadow: 0 0 5px rgba(57,255,20,0.2); }
-        .b-sell { color: var(--neon-red); border: 1px solid var(--neon-red); box-shadow: 0 0 5px rgba(255,7,58,0.2); }
-        .b-wait { color: #555; border: 1px solid #333; }
+        .b-buy { color: #000; background: var(--neon-green); }
+        .b-sell { color: #fff; background: var(--neon-red); }
+        .b-wait { color: #666; border: 1px solid #333; }
 
-        .pnl { font-family: monospace; font-weight: bold; }
-        .p-green { color: var(--neon-green); }
-        .p-red { color: var(--neon-red); }
-
-        .momentum-bar {
+        .progress-bg {
             height: 4px;
             background: #222;
-            margin-top: 5px;
-            position: relative;
+            width: 100%;
+            border-radius: 2px;
+            margin-bottom: 8px;
         }
-        .momentum-fill { height: 100%; transition: width 0.3s; }
+        .progress-fill { height: 100%; transition: width 0.5s; }
 
-        .ai-reason {
-            font-size: 0.75rem;
-            color: #888;
-            margin-top: 8px;
-            line-height: 1.3;
-            border-left: 2px solid #333;
-            padding-left: 8px;
-        }
+        .ai-reason { font-size: 0.7rem; color: #888; line-height: 1.2; }
+        .levels { font-size: 0.7rem; color: #555; margin-top: 5px; font-family: monospace; display: flex; justify-content: space-between;}
 
-        .pivot-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #555;
-            margin-top: 8px;
-            font-family: monospace;
-        }
-
-        .loader { text-align: center; color: var(--neon-blue); font-size: 0.8rem; display: none; margin-bottom: 10px; }
-        .timer { text-align: center; font-size: 0.7rem; color: #555; margin-top: 5px; }
+        .loader { text-align: center; color: var(--neon-blue); font-size: 0.8rem; display: none; margin: 15px 0; }
+        .timer { text-align: center; font-size: 0.75rem; color: #555; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-    <h1>AI SCALPER v11.0 (M5/M15)</h1>
+    <h1>AI TRADER v13.0 (HYBRID)</h1>
 
     <div class="settings-panel">
-        <input type="password" id="apiKey" placeholder="OpenRouter API Key">
+        <input type="password" id="apiKey" placeholder="OpenRouter Key (sk-or-...)">
         <select id="modelSelect">
-            <option value="deepseek/deepseek-v3.2">DeepSeek V3.2 (Быстрый)</option>
+            <option value="deepseek/deepseek-v3.2" selected>DeepSeek V3.2 (Быстрый)</option>
             <option value="openai/gpt-4o-mini">GPT-4o Mini (Точный)</option>
-            <option value="deepseek/deepseek-r1">DeepSeek R1 (Аналитик)</option>
         </select>
         <div class="controls">
-            <button class="btn-start" onclick="startScalper()">START SCALPING</button>
-            <button class="btn-stop" onclick="stopScalper()">STOP</button>
+            <button class="btn-start" onclick="startSystem()">START</button>
+            <button class="btn-stop" onclick="stopSystem()">STOP</button>
         </div>
-        <div class="timer" id="timerDisplay">System Ready</div>
+        <div class="timer" id="timerDisplay">Ready</div>
     </div>
 
-    <div id="loader" class="loader">⚡ Анализ M5/M15 Momentum...</div>
+    <div id="loader" class="loader">
+        📡 MOEX Data Stream...<br>
+        🧠 AI Calculating P&L + Targets...
+    </div>
+    
     <div class="grid" id="cards"></div>
     <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
         const ASSETS = [
-            { code: 'SRH6', name: 'Sberbank', desc: 'SBRF-3.26' },
-            { code: 'SiH6', name: 'Si (USD)', desc: 'Si-3.26' },
-            { code: 'CRH6', name: 'CNY (Yuan)', desc: 'CNY-3.26' },
-            { code: 'EuH6', name: 'Eu (Euro)', desc: 'Eu-3.26' },
+            { code: 'SRH6', name: 'SBER', desc: 'SBRF-3.26' },
+            { code: 'SiH6', name: 'Si-USD', desc: 'Si-3.26' },
+            { code: 'CRH6', name: 'Yuan', desc: 'CNY-3.26' },
+            { code: 'EuH6', name: 'Euro', desc: 'Eu-3.26' },
             { code: 'GDH6', name: 'Gold', desc: 'GOLD-3.26' },
             { code: 'SVH6', name: 'Silver', desc: 'SILV-3.26' },
-            { code: 'BRH6', name: 'Brent Oil', desc: 'BR-3.26' },
-            { code: 'NGH6', name: 'Nat Gas', desc: 'NG-3.26' },
+            { code: 'BRH6', name: 'Brent', desc: 'BR-3.26' },
+            { code: 'NGH6', name: 'Gas', desc: 'NG-3.26' },
             { code: 'WHH6', name: 'Wheat', desc: 'WHEAT-3.26' },
-            { code: 'MXH6', name: 'MOEX Index', desc: 'MIX-3.26' },
+            { code: 'MXH6', name: 'MOEX', desc: 'MIX-3.26' },
             { code: 'CCH6', name: 'Cocoa', desc: 'COCOA-3.26' },
             { code: 'KCH6', name: 'Coffee', desc: 'COFFEE-3.26' }
         ];
@@ -194,8 +203,11 @@
             market: {},
             signals: {},
             active: false,
-            cycleTime: 180000 // 3 минуты для скальпинга (быстрее обновление)
+            cycleTime: 120000 // 2 мин
         };
+
+        // Загрузка сохраненных входов из памяти (чтобы не сбрасывалось при F5)
+        let savedEntries = JSON.parse(localStorage.getItem('ai_trader_entries')) || {};
 
         let timerRef, countdownRef, wakeLock;
 
@@ -210,91 +222,120 @@
             
             ASSETS.forEach(a => {
                 const m = state.market[a.code] || { price: 0, change: 0 };
-                const s = state.signals[a.code] || { action: 'WAIT', prob: 0, reason: 'Waiting for data...' };
+                const s = state.signals[a.code] || { action: 'WAIT', prob: 0, reason: 'Waiting...' };
+                const entry = savedEntries[a.code]; // Цена входа из памяти
 
-                // P&L Logic
-                let pnlHtml = '<span style="color:#444">0.0%</span>';
-                if(s.entry && m.price > 0 && s.action !== 'WAIT') {
+                // 1. Считаем P&L (Прибыль с момента сигнала)
+                let pnlText = "0.00%";
+                let pnlClass = "val-gray";
+                
+                if (entry && m.price > 0 && s.action !== 'WAIT') {
                     let pnl = 0;
-                    if(s.action === 'BUY') pnl = ((m.price - s.entry) / s.entry) * 100;
-                    if(s.action === 'SELL') pnl = ((s.entry - m.price) / s.entry) * 100;
+                    if(s.action === 'BUY') pnl = ((m.price - entry) / entry) * 100;
+                    if(s.action === 'SELL') pnl = ((entry - m.price) / entry) * 100;
                     
-                    const color = pnl >= 0 ? 'var(--neon-green)' : 'var(--neon-red)';
-                    pnlHtml = `<span style="color:${color}">${(pnl>0?'+':'') + pnl.toFixed(2)}%</span>`;
+                    pnlText = (pnl > 0 ? '+' : '') + pnl.toFixed(2) + '%';
+                    pnlClass = pnl >= 0 ? 'val-green' : 'val-red';
                 }
 
-                // Badge Style
+                // 2. Считаем Target (Потенциал до TP)
+                let targetText = "---";
+                let targetClass = "val-gray";
+                if(s.action !== 'WAIT' && s.tp > 0 && m.price > 0) {
+                    let diff = 0;
+                    if(s.action === 'BUY') diff = ((s.tp - m.price) / m.price) * 100;
+                    if(s.action === 'SELL') diff = ((m.price - s.tp) / m.price) * 100;
+                    
+                    if(diff > 0.01) {
+                        targetText = '+' + diff.toFixed(2) + '%';
+                        targetClass = 'val-blue';
+                    }
+                }
+
+                // Styles
                 let badgeClass = 'b-wait';
-                if(s.action === 'BUY') badgeClass = 'b-buy';
-                if(s.action === 'SELL') badgeClass = 'b-sell';
+                let barColor = '#333';
+                if(s.action === 'BUY') { badgeClass = 'b-buy'; barColor = 'var(--neon-green)'; }
+                if(s.action === 'SELL') { badgeClass = 'b-sell'; barColor = 'var(--neon-red)'; }
 
                 grid.innerHTML += `
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <div style="font-weight:bold">${a.name}</div>
-                                <div class="asset-code">${a.desc}</div>
+                                <div class="asset-code">${a.name}</div>
+                                <div class="asset-desc">${a.desc}</div>
                             </div>
                             <div style="text-align:right">
                                 <div class="price">${m.price || '---'}</div>
-                                <div style="font-size:0.7rem; color:${m.change >= 0 ? '#39ff14':'#ff073a'}">${m.change}%</div>
+                                <div class="change" style="color:${m.change>=0?'#00ff41':'#ff003c'}">${m.change}%</div>
                             </div>
                         </div>
 
-                        <div class="scalp-row">
+                        <div class="stats-row">
+                            <div class="stat-box">
+                                <div class="stat-label">CURRENT P&L</div>
+                                <div class="stat-val ${pnlClass}">${pnlText}</div>
+                            </div>
+                            <div style="width:1px; background:#222;"></div>
+                            <div class="stat-box">
+                                <div class="stat-label">TO TARGET</div>
+                                <div class="stat-val ${targetClass}">${targetText}</div>
+                            </div>
+                        </div>
+
+                        <div class="action-row">
                             <div class="badge ${badgeClass}">${s.action}</div>
-                            <div class="pnl">${pnlHtml}</div>
+                            <div style="font-size:0.8rem; font-weight:bold; color:#666">${s.prob}%</div>
                         </div>
 
-                        <div class="momentum-bar">
-                            <div class="momentum-fill" style="width:${s.prob}%; background:${s.action==='BUY'?'var(--neon-green)':(s.action==='SELL'?'var(--neon-red)':'#333')}"></div>
-                        </div>
-
-                        <div class="pivot-info">
-                            <span>Pivot Pos: ${m.pivotPos || '---'}</span>
-                            <span>TP: ${s.tp || '---'}</span>
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width:${s.prob}%; background:${barColor}"></div>
                         </div>
 
                         <div class="ai-reason">${s.reason}</div>
+                        <div class="levels">
+                            <span>Entry: ${entry || '-'}</span>
+                            <span style="color:var(--neon-blue)">TP: ${s.tp || '-'}</span>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        async function startScalper() {
+        async function startSystem() {
             const key = document.getElementById('apiKey').value;
-            if(!key) return alert('Need API Key');
+            if(!key) return alert('Key required!');
             localStorage.setItem('or_key', key);
             
             state.active = true;
             document.querySelector('.btn-start').disabled = true;
-            document.querySelector('.btn-start').innerText = 'SCALPING ON...';
+            document.querySelector('.btn-start').innerText = 'ACTIVE';
             
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){}
 
-            runAnalysis();
-            timerRef = setInterval(runAnalysis, state.cycleTime);
+            runCycle();
+            timerRef = setInterval(runCycle, state.cycleTime);
         }
 
-        function stopScalper() {
+        function stopSystem() {
             state.active = false;
             clearInterval(timerRef);
             clearInterval(countdownRef);
             if(wakeLock) wakeLock.release();
             document.querySelector('.btn-start').disabled = false;
-            document.querySelector('.btn-start').innerText = 'START SCALPING';
+            document.querySelector('.btn-start').innerText = 'START';
             document.getElementById('timerDisplay').innerText = 'Stopped';
         }
 
-        async function runAnalysis() {
+        async function runCycle() {
             document.getElementById('loader').style.display = 'block';
-            await fetchPrices();
+            await fetchMoex();
             await getAiSignals();
             document.getElementById('loader').style.display = 'none';
             startTimer(state.cycleTime / 1000);
         }
 
-        async function fetchPrices() {
+        async function fetchMoex() {
             for (let asset of ASSETS) {
                 try {
                     const res = await fetch(`https://iss.moex.com/iss/engines/futures/markets/forts/securities/${asset.code}.json`);
@@ -311,25 +352,13 @@
 
                     let price = getVal(json.marketdata, ['LAST', 'THEORPRICE']) || getVal(json.securities, ['PREVPRICE']);
                     let open = getVal(json.marketdata, ['OPEN']) || getVal(json.securities, ['OPEN']);
-                    let high = getVal(json.marketdata, ['HIGH']) || price;
-                    let low = getVal(json.marketdata, ['LOW']) || price;
                     let change = getVal(json.marketdata, ['LASTCHANGEPRCNT']) || 0;
 
-                    // Скальперская математика: Pivot Point
-                    // Если High/Low равны (нет торгов), эмулируем узкий канал
-                    if(high === low) { high = price * 1.001; low = price * 0.999; }
-                    
-                    const pivot = (high + low + price) / 3;
-                    let pivotPos = "Neutral";
-                    if(price > pivot) pivotPos = "Above PVT (Bull)";
-                    if(price < pivot) pivotPos = "Below PVT (Bear)";
+                    if(!price) price = 0; 
+                    if(!open) open = price;
 
-                    state.market[asset.code] = { price, open, high, low, change, pivot, pivotPos };
-                    
-                } catch(e) {
-                    console.error(e);
-                    state.market[asset.code] = { price: 0 };
-                }
+                    state.market[asset.code] = { price, open, change };
+                } catch(e) { console.error(e); }
             }
         }
 
@@ -340,39 +369,21 @@
             const promptData = ASSETS.map(a => {
                 const m = state.market[a.code];
                 if(!m.price) return `${a.code}: No Data`;
-                
-                // Рассчитываем данные для ИИ
-                const distFromOpen = ((m.price - m.open) / m.open) * 100;
-                
-                return `
-                TICKER: ${a.code}
-                Current Price: ${m.price}
-                Open Price: ${m.open} (Move: ${distFromOpen.toFixed(2)}%)
-                Day High: ${m.high} | Day Low: ${m.low}
-                Pivot Status: ${m.pivotPos}
-                Trend: ${m.change > 0 ? 'Up' : 'Down'}
-                `;
+                const dist = ((m.price - m.open) / m.open) * 100;
+                // Передаем также текущий статус, чтобы ИИ был стабильнее
+                const oldSig = state.signals[a.code] ? state.signals[a.code].action : "NONE";
+                return `${a.code}: Price=${m.price}, Open=${m.open}, DayDiff=${dist.toFixed(2)}%, PrevSignal=${oldSig}`;
             }).join('\n');
 
             const systemPrompt = `
-            You are an aggressive Scalper AI specialized in Futures (M5/M15 timeframes).
-            Analyze the provided market data relative to the Open Price and Pivot Points.
+            Act as a Scalping Algo.
+            1. Analyze Price vs Open.
+            2. Signals: BUY (Price > Open), SELL (Price < Open), WAIT (Flat).
+            3. Provide realistic TP (Target) ~0.4% from current price.
+            4. Stability: If trend continues, keep previous signal.
             
-            SCALPING RULES:
-            1. BUY Signal: Price is > Open AND Price is > Pivot. Momentum is Up.
-            2. SELL Signal: Price is < Open AND Price is < Pivot. Momentum is Down.
-            3. WAIT: If Price is very close to Open (0.05% diff) -> Chop/Flat.
-            
-            Take Profits (TP) should be short (0.3% - 0.5% from current price).
-            
-            Return JSON ONLY:
-            [{
-                "id": "TICKER",
-                "action": "BUY/SELL/WAIT",
-                "prob": 0-100 (Confidence),
-                "reason": "Short reason (e.g. Breakout above Open)",
-                "tp": price_number
-            }]
+            JSON ONLY:
+            [{ "id": "TICKER", "action": "BUY/SELL/WAIT", "prob": 0-100, "reason": "short text", "tp": number }]
             `;
 
             try {
@@ -382,7 +393,7 @@
                     body: JSON.stringify({
                         model: model,
                         messages: [{role: "system", content: systemPrompt}, {role: "user", content: promptData}],
-                        temperature: 0.4 
+                        temperature: 0.3
                     })
                 });
 
@@ -390,32 +401,37 @@
                 let cleanJson = data.choices[0].message.content.replace(/```json|```/g, '');
                 const signals = JSON.parse(cleanJson);
 
-                let playSound = false;
+                let hasNewSignal = false;
 
                 signals.forEach(s => {
-                    const prev = state.signals[s.id];
-                    const currM = state.market[s.id];
-                    
-                    // Логика входа
-                    let entry = prev ? prev.entry : currM.price;
-                    
-                    // Если сигнал сменился, обновляем вход
-                    if(prev && prev.action !== s.action && s.action !== 'WAIT') {
-                        entry = currM.price;
-                        if(s.prob > 60) playSound = true;
+                    const prevAction = state.signals[s.id] ? state.signals[s.id].action : 'WAIT';
+                    const currentPrice = state.market[s.id].price;
+
+                    // --- ЛОГИКА ВХОДА (Persistence) ---
+                    // 1. Если сигнал сменился (напр. WAIT -> BUY), записываем новую точку входа
+                    if (s.action !== prevAction && s.action !== 'WAIT') {
+                        savedEntries[s.id] = currentPrice;
+                        hasNewSignal = true;
+                    } 
+                    // 2. Если сигнал стал WAIT, сбрасываем вход
+                    else if (s.action === 'WAIT') {
+                        savedEntries[s.id] = null;
                     }
+                    // 3. Если сигнал тот же (BUY -> BUY), оставляем старый entry (не перезаписываем!)
 
                     state.signals[s.id] = {
                         action: s.action,
                         prob: s.prob,
                         reason: s.reason,
-                        tp: s.tp,
-                        entry: entry
+                        tp: parseFloat(s.tp)
                     };
                 });
+                
+                // Сохраняем входы в LocalStorage
+                localStorage.setItem('ai_trader_entries', JSON.stringify(savedEntries));
 
                 renderGrid();
-                if(playSound) document.getElementById('alertSound').play().catch(e=>{});
+                if(hasNewSignal) document.getElementById('alertSound').play().catch(e=>{});
 
             } catch(e) { console.error(e); }
         }
@@ -424,7 +440,7 @@
             clearInterval(countdownRef);
             const el = document.getElementById('timerDisplay');
             countdownRef = setInterval(() => {
-                el.innerText = `Next Scan: ${sec--}s`;
+                el.innerText = `Scan: ${sec--}s`;
                 if(sec < 0) clearInterval(countdownRef);
             }, 1000);
         }

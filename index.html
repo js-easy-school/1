@@ -3,69 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI ТРЕЙДЕР v17.0 (REAL NEWS)</title>
+    <title>AI ТРЕЙДЕР v18.0 (STABLE)</title>
     <style>
-        :root { --bg: #050505; --card: #121212; --text: #e0e0e0; --green: #00ff41; --red: #ff1a1a; --blue: #00f0ff; --gold: #ffd700; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; padding-bottom: 100px; }
+        :root { --bg: #050505; --card: #141414; --text: #e0e0e0; --green: #00ff41; --red: #ff1a1a; --blue: #00f0ff; --gold: #ffd700; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; padding-bottom: 120px; }
         
-        h1 { text-align: center; color: var(--gold); margin: 15px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { text-align: center; color: var(--green); margin: 15px 0; font-size: 1.2rem; text-transform: uppercase; }
 
-        /* Панель новостей */
-        .news-ticker {
-            background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px; font-size: 0.8rem; color: #aaa;
-            height: 60px; overflow-y: auto; border-left: 3px solid var(--blue);
-        }
-        .news-item { border-bottom: 1px solid #222; padding: 4px 0; }
-
-        .settings { background: #0a0a0a; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box;}
+        .settings { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box;}
         
         button { 
-            width: 100%; padding: 14px; background: linear-gradient(45deg, var(--gold), #ff8800); 
-            color: #000; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase;
+            width: 100%; padding: 14px; background: linear-gradient(45deg, #0088ff, #0055aa); 
+            color: #fff; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase;
         }
-        button:disabled { background: #333; color: #666; }
+        button:disabled { background: #333; color: #666; cursor: wait; }
+
+        /* Лог действий (чтобы видеть ошибки) */
+        .debug-log {
+            font-family: monospace; font-size: 0.75rem; color: #666; margin-top: 10px;
+            background: #000; padding: 8px; border-radius: 4px; border: 1px solid #222;
+            height: 60px; overflow-y: auto;
+        }
+
+        .news-box {
+            background: #080808; padding: 10px; border-radius: 6px; border-left: 3px solid var(--gold);
+            margin-bottom: 10px; font-size: 0.8rem; color: #aaa; min-height: 40px;
+        }
 
         .card { background: var(--card); border: 1px solid #222; margin-bottom: 12px; padding: 12px; border-radius: 8px; position: relative; }
-        .sniper-mode { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .sniper-mode { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .asset-name { font-weight: bold; font-size: 1rem; color: #fff; }
         .price { font-family: monospace; font-size: 1.1rem; font-weight: bold; }
         
-        /* Статистика */
         .stats-row { display: flex; justify-content: space-between; background: #000; padding: 8px; border-radius: 6px; margin: 10px 0; border: 1px solid #222; }
         .stat-box { width: 48%; text-align: center; }
         .stat-label { font-size: 0.65rem; color: #666; text-transform: uppercase; }
-        .stat-val { font-family: monospace; font-weight: bold; font-size: 1rem; }
         
         .val-green { color: var(--green); } .val-red { color: var(--red); } .val-blue { color: var(--blue); }
 
-        /* Сигналы */
-        .signal-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .badge { padding: 5px 10px; font-weight: 900; border-radius: 4px; font-size: 0.85rem; text-transform: uppercase; }
+        .badge { padding: 5px 10px; font-weight: 900; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; display: inline-block; }
         .b-buy { background: var(--green); color: #000; } .b-sell { background: var(--red); color: #fff; } .b-wait { background: #333; color: #777; }
 
-        .progress-bg { height: 4px; background: #222; width: 100%; border-radius: 2px; }
+        .progress-bg { height: 4px; background: #222; width: 100%; border-radius: 2px; margin-top: 8px; }
         .progress-fill { height: 100%; transition: width 0.5s; }
-
+        
         .ai-reason { font-size: 0.75rem; color: #999; margin-top: 8px; line-height: 1.3; }
-        .status-bar { text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>AI NEWS TRADER v17.0</h1>
+    <h1>AI ТРЕЙДЕР v18.0 (STABLE)</h1>
 
     <div class="settings">
         <input type="password" id="apiKey" placeholder="API Ключ OpenRouter">
         
-        <div id="newsContainer" class="news-ticker">
-            Загрузка заголовков новостей...
-        </div>
+        <select id="newsMode" onchange="toggleNewsMode()">
+            <option value="AUTO">📡 Авто-Новости (RBC/RSS)</option>
+            <option value="MANUAL">🖐 Ручной Фон (Выбрать ниже)</option>
+        </select>
+        
+        <select id="manualSentiment" style="display:none">
+            <option value="NEUTRAL">⚖️ Нейтрально</option>
+            <option value="POSITIVE">🚀 Позитив (Рост)</option>
+            <option value="NEGATIVE">🩸 Негатив (Падение)</option>
+        </select>
 
-        <button class="btn-start" onclick="startSystem()">АВТО-ТОРГОВЛЯ</button>
-        <div id="timerDisplay" class="status-bar">Система готова</div>
+        <div id="newsDisplay" class="news-box">Ожидание запуска...</div>
+
+        <button class="btn-start" onclick="startSystem()">ЗАПУСК</button>
+        
+        <div id="debugLog" class="debug-log">Система готова. Нажмите ЗАПУСК.</div>
     </div>
 
     <div id="grid"></div>
@@ -77,14 +87,15 @@
             { code: 'SRH6', name: 'СБЕР', desc: 'SBER' },
             { code: 'SiH6', name: 'Si (USD)', desc: 'Si-3.26' },
             { code: 'CRH6', name: 'ЮАНЬ', desc: 'CNY' },
+            { code: 'EuH6', name: 'ЕВРО', desc: 'Eu-3.26' },
             { code: 'GDH6', name: 'ЗОЛОТО', desc: 'GOLD' },
             { code: 'BRH6', name: 'НЕФТЬ', desc: 'BRENT' },
             { code: 'MXH6', name: 'ИНДЕКС', desc: 'IMOEX' },
-            { code: 'WHH6', name: 'ПШЕНИЦА', desc: 'WHEAT' }
+            { code: 'WHH6', name: 'ПШЕНИЦА', desc: 'WHEAT' } // v8 fix
         ];
 
-        let state = { market: {}, signals: {}, news: [] };
-        let savedEntries = JSON.parse(localStorage.getItem('ai_trader_v17_entries')) || {};
+        let state = { market: {}, signals: {}, newsText: "Фон неизвестен" };
+        let savedEntries = JSON.parse(localStorage.getItem('ai_trader_v18_entries')) || {};
         let timerRef, countdownRef;
 
         window.onload = () => {
@@ -92,119 +103,153 @@
             renderGrid();
         };
 
+        function toggleNewsMode() {
+            const mode = document.getElementById('newsMode').value;
+            document.getElementById('manualSentiment').style.display = (mode === 'MANUAL') ? 'block' : 'none';
+        }
+
+        function log(msg) {
+            const el = document.getElementById('debugLog');
+            const time = new Date().toLocaleTimeString();
+            el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
+        }
+
         async function startSystem() {
             const key = document.getElementById('apiKey').value;
-            if(!key) return alert('Нужен ключ!');
+            if(!key) return alert('Введите API ключ!');
             localStorage.setItem('or_key', key);
             
             document.querySelector('.btn-start').disabled = true;
-            document.querySelector('.btn-start').innerText = 'AI АНАЛИЗИРУЕТ РЫНОК...';
+            document.querySelector('.btn-start').innerText = 'РАБОТАЕТ...';
             
             runCycle();
-            timerRef = setInterval(runCycle, 180000); // 3 минуты (чтобы новости успели обновиться)
+            timerRef = setInterval(runCycle, 120000); // 2 минуты
         }
 
         async function runCycle() {
-            document.getElementById('timerDisplay').innerText = '📰 Скачиваю новости...';
-            await fetchRealNews(); // 1. Качаем новости
+            log('🚀 Начинаю цикл анализа...');
             
-            document.getElementById('timerDisplay').innerText = '📊 Скачиваю цены...';
-            await fetchMoex(); // 2. Качаем цены
-            
-            document.getElementById('timerDisplay').innerText = '🧠 ИИ думает...';
-            await askAI(); // 3. Анализируем всё вместе
-            
+            // 1. Новости (с защитой от зависания)
+            const mode = document.getElementById('newsMode').value;
+            if(mode === 'AUTO') {
+                log('Скачиваю новости...');
+                await fetchNewsSafe();
+            } else {
+                const manual = document.getElementById('manualSentiment').value;
+                state.newsText = `Ручной режим: ${manual}`;
+                log('Использую ручной фон: ' + manual);
+            }
+            document.getElementById('newsDisplay').innerText = state.newsText.slice(0, 100) + '...';
+
+            // 2. Цены MOEX
+            log('Получаю цены MOEX...');
+            await fetchMoexSafe();
+
+            // 3. Анализ ИИ
+            log('Отправка данных в AI...');
+            await askAISafe();
+
             renderGrid();
-            startCountdown(180);
+            startCountdown(120);
         }
 
-        // --- 1. ФУНКЦИЯ ПОЛУЧЕНИЯ РЕАЛЬНЫХ НОВОСТЕЙ (RBC ECONOMICS) ---
-        async function fetchRealNews() {
+        // --- БЕЗОПАСНАЯ ЗАГРУЗКА НОВОСТЕЙ ---
+        async function fetchNewsSafe() {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000); // Тайм-аут 4 сек
+
             try {
-                // Используем публичный прокси rss2json для обхода CORS
-                // Источник: РБК Экономика (один из самых быстрых по РФ)
+                // Публичный прокси, часто бывает перегружен
                 const rssUrl = 'https://rssexport.rbc.ru/rbcnews/news/20/full.rss';
                 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
                 
-                const res = await fetch(apiUrl);
+                const res = await fetch(apiUrl, { signal: controller.signal });
                 const json = await res.json();
-                
-                if(json.items && json.items.length > 0) {
-                    // Берем топ-5 последних заголовков
-                    state.news = json.items.slice(0, 5).map(item => item.title);
-                    
-                    // Отображаем в интерфейсе
-                    const container = document.getElementById('newsContainer');
-                    container.innerHTML = state.news.map(t => `<div class="news-item">• ${t}</div>`).join('');
+                clearTimeout(timeoutId);
+
+                if(json.status === 'ok' && json.items.length > 0) {
+                    const titles = json.items.slice(0, 3).map(i => i.title).join('. ');
+                    state.newsText = titles;
+                    log('✅ Новости получены!');
+                } else {
+                    throw new Error('Пустой ответ RSS');
                 }
             } catch(e) {
-                console.error("Ошибка новостей:", e);
-                state.news = ["Не удалось загрузить новости. Считаем фон нейтральным."];
+                console.error(e);
+                state.newsText = "Ошибка загрузки новостей. Считаем фон НЕЙТРАЛЬНЫМ.";
+                log('⚠️ Ошибка новостей (API/Limit). Фон сброшен.');
             }
         }
 
-        // --- 2. MOEX DATA ---
-        async function fetchMoex() {
+        // --- БЕЗОПАСНАЯ ЗАГРУЗКА КОТИРОВОК ---
+        async function fetchMoexSafe() {
+            let loadedCount = 0;
             for (let a of ASSETS) {
                 try {
                     const res = await fetch(`https://iss.moex.com/iss/engines/futures/markets/forts/securities/${a.code}.json`);
+                    if(!res.ok) throw new Error('Http Error');
                     const json = await res.json();
-                    const getVal = (s, n) => {
+                    
+                    const getVal = (s, cols) => {
                         if(!s || !s.data[0]) return null;
-                        for(let x of n) { let i = s.columns.indexOf(x); if(i>-1 && s.data[0][i]!=null) return s.data[0][i]; }
+                        for(let c of cols) { 
+                            let idx = s.columns.indexOf(c); 
+                            if(idx>-1 && s.data[0][idx]!=null) return s.data[0][idx]; 
+                        }
                         return null;
                     };
 
                     let price = getVal(json.marketdata, ['LAST','THEORPRICE']) || getVal(json.securities, ['PREVPRICE']);
                     let open = getVal(json.marketdata, ['OPEN']) || getVal(json.securities, ['OPEN']);
                     if(!open) open = price;
-                    
-                    let high = getVal(json.marketdata,['HIGH'])||price;
-                    let low = getVal(json.marketdata,['LOW'])||price;
-                    let pivot = (high+low+price)/3;
 
-                    state.market[a.code] = { price: price||0, open: open||0, pivot };
-                } catch(e){}
+                    state.market[a.code] = { price: price||0, open: open||0 };
+                    if(price) loadedCount++;
+
+                } catch(e) {
+                    console.error(`Ошибка ${a.code}`);
+                    state.market[a.code] = { price: 0, open: 0 };
+                }
             }
+            log(`✅ Котировки: загружено ${loadedCount} из ${ASSETS.length}`);
         }
 
-        // --- 3. AI ANALYSIS (Цены + Реальные Заголовки) ---
-        async function askAI() {
+        // --- БЕЗОПАСНЫЙ ЗАПРОС К ИИ ---
+        async function askAISafe() {
             const key = document.getElementById('apiKey').value;
+            const news = state.newsText;
             
-            // Собираем текст новостей в одну строку для промпта
-            const newsBlock = state.news.join(". ");
+            // Проверка: если цен нет, не тратим токены
+            const hasPrices = Object.values(state.market).some(m => m.price > 0);
+            if(!hasPrices) {
+                log('❌ Нет цен для анализа. Пропуск ИИ.');
+                return;
+            }
 
             const promptData = ASSETS.map(a => {
                 const m = state.market[a.code];
                 if(!m.price) return null;
-                
-                // Технический пре-анализ
-                let tech = "NEUTRAL";
-                if(m.price > m.open && m.price > m.pivot) tech = "UP_TREND";
-                if(m.price < m.open && m.price < m.pivot) tech = "DOWN_TREND";
-                
                 const entry = savedEntries[a.code] || 0;
-                return `ID:${a.code} | Price:${m.price} | Tech:${tech} | Entry:${entry}`;
+                
+                // Простая тех. оценка для помощи ИИ
+                let tech = "FLAT";
+                if(m.price > m.open) tech = "UP";
+                if(m.price < m.open) tech = "DOWN";
+
+                return `ID:${a.code} | P:${m.price} | O:${m.open} | TECH:${tech} | ENTRY:${entry}`;
             }).join('\n');
 
             const systemPrompt = `
-            Ты AI-Трейдер.
+            AI Trader (Russian). Analyze using Tech + News.
+            NEWS: "${news.substring(0, 500)}..."
             
-            ВОТ ПОСЛЕДНИЕ НОВОСТИ (РФ/МИР):
-            "${newsBlock}"
+            RULES:
+            1. If News=BAD -> NO BUY signals.
+            2. If News=GOOD -> NO SELL signals.
+            3. Provide TP (Target) ~0.5% away.
+            4. If ENTRY exists: advise HOLD or CLOSE.
             
-            ТВОЯ ЗАДАЧА:
-            1. Оцени сентимент новостей (0-100, где 0=Паника, 50=Нейтрально, 100=Эйфория).
-            2. Сопоставь новости с Техническим анализом.
-            
-            ПРАВИЛА:
-            - Если новости ПЛОХИЕ (санкции, ставки ЦБ, падение нефти), БЛОКИРУЙ сигналы BUY.
-            - Если новости ХОРОШИЕ, БЛОКИРУЙ сигналы SELL.
-            - СНАЙПЕРСКИЙ СИГНАЛ: Если Техника=UP и Новости=GOOD (или Техника=DOWN и Новости=BAD).
-            
-            JSON FORMAT:
-            [{ "id": "код", "action": "ПОКУПАТЬ/ПРОДАВАТЬ/ЖДАТЬ/ДЕРЖАТЬ", "prob": 0-100, "reason": "анализ новости + техники", "tp": цена }]
+            JSON: [{ "id": "SRH6", "action": "ПОКУПАТЬ/ПРОДАВАТЬ/ЖДАТЬ", "prob": 0-100, "reason": "text", "tp": number }]
             `;
 
             try {
@@ -219,69 +264,67 @@
                 });
 
                 const json = await res.json();
+                if(json.error) throw new Error(json.error.message);
+
                 let clean = json.choices[0].message.content.replace(/```json|```/g, '');
                 const signals = JSON.parse(clean);
                 
                 let alert = false;
-
                 signals.forEach(s => {
                     const prev = state.signals[s.id] ? state.signals[s.id].action : 'ЖДАТЬ';
-                    const currPrice = state.market[s.id].price;
                     
-                    // Сохранение входа (Persistence)
-                    if((s.action.includes('ПОКУП') || s.action.includes('ПРОДА')) && !s.action.includes('ДЕРЖАТЬ')) {
-                        if(prev !== s.action) {
-                            savedEntries[s.id] = currPrice;
+                    // Логика сохранения
+                    if(s.action.includes('ПОКУП') || s.action.includes('ПРОДА')) {
+                        if(!s.action.includes('ДЕРЖАТЬ') && prev !== s.action) {
+                            savedEntries[s.id] = state.market[s.id].price;
                             alert = true;
                         }
-                    } else if(s.action === 'ЖДАТЬ') {
+                    } else if(s.action.includes('ЖДАТЬ')) {
                         savedEntries[s.id] = null;
                     }
-                    
                     state.signals[s.id] = s;
                 });
                 
-                localStorage.setItem('ai_trader_v17_entries', JSON.stringify(savedEntries));
+                localStorage.setItem('ai_trader_v18_entries', JSON.stringify(savedEntries));
                 if(alert) document.getElementById('alertSound').play().catch(()=>{});
+                log('✅ ИИ анализ завершен!');
 
-            } catch(e) { console.error(e); }
+            } catch(e) {
+                log('❌ Ошибка ИИ: ' + e.message);
+            }
         }
 
-        // --- RENDER ---
         function renderGrid() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
             
             ASSETS.forEach(a => {
-                const s = state.signals[a.code] || { action: 'ЖДАТЬ', prob: 0, reason: 'Загрузка...' };
+                const s = state.signals[a.code] || { action: '...', prob: 0, reason: 'Ожидание...' };
                 const m = state.market[a.code];
-                const entry = savedEntries[a.code]; 
+                const entry = savedEntries[a.code];
 
-                if(!m.price) return;
+                if(!m || !m.price) return;
 
-                // P&L Logic
-                let pnlText = "0.00%";
-                let pnlClass = "val-gray";
-                if(entry && entry > 0) {
+                // P&L
+                let pnlHtml = '<span style="color:#444">0.00%</span>';
+                if(entry > 0) {
                     let pnl = 0;
                     if(s.action.includes('ПОКУП') || s.action.includes('ДЕРЖАТЬ')) pnl = ((m.price - entry)/entry)*100;
-                    if(s.action.includes('ПРОДА')) pnl = ((entry - m.price)/entry)*100;
-                    
-                    pnlText = (pnl>0?'+':'') + pnl.toFixed(2) + '%';
-                    pnlClass = pnl >= 0 ? 'val-green' : 'val-red';
+                    else pnl = ((entry - m.price)/entry)*100;
+                    pnlHtml = `<span style="color:${pnl>=0?'var(--green)':'var(--red)'}">${(pnl>0?'+':'')+pnl.toFixed(2)}%</span>`;
                 }
 
-                // Styles
+                // Цвета
                 let badgeClass = 'b-wait';
                 let barColor = '#333';
                 if(s.action.includes('ПОКУП')) { badgeClass = 'b-buy'; barColor = 'var(--green)'; }
                 if(s.action.includes('ПРОДА')) { badgeClass = 'b-sell'; barColor = 'var(--red)'; }
-
+                
+                // Sniper
                 const isSniper = s.prob >= 85;
-                const sniperClass = isSniper ? 'sniper-mode' : '';
 
                 grid.innerHTML += `
-                    <div class="card ${sniperClass}">
+                    <div class="card ${isSniper ? 'sniper-mode' : ''}">
                         <div class="header">
                             <div class="asset-name">${a.name}</div>
                             <div class="price">${m.price}</div>
@@ -289,19 +332,19 @@
 
                         <div class="stats-row">
                             <div class="stat-box">
-                                <div class="stat-label">ПРИБЫЛЬ</div>
-                                <div class="stat-val ${pnlClass}">${pnlText}</div>
+                                <div class="stat-label">P&L</div>
+                                <div style="font-weight:bold; font-family:monospace">${pnlHtml}</div>
                             </div>
                             <div style="width:1px; background:#222"></div>
                             <div class="stat-box">
                                 <div class="stat-label">ЦЕЛЬ</div>
-                                <div class="stat-val val-blue">${s.tp || '---'}</div>
+                                <div style="font-weight:bold; color:var(--blue); font-family:monospace">${s.tp || '-'}</div>
                             </div>
                         </div>
 
-                        <div class="signal-row">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div class="badge ${badgeClass}">${s.action}</div>
-                            <div style="font-weight:bold; color:${barColor}">${s.prob}%</div>
+                            <div style="font-weight:bold">${s.prob}%</div>
                         </div>
 
                         <div class="progress-bg">
@@ -309,8 +352,7 @@
                         </div>
 
                         <div class="ai-reason">
-                            ${isSniper ? '🔥 <b>НОВОСТИ + ТЕХНИКА:</b> ' : ''}
-                            ${s.reason}
+                            ${isSniper ? '🔥 ' : ''}${s.reason}
                         </div>
                     </div>
                 `;
@@ -319,9 +361,10 @@
 
         function startCountdown(sec) {
             clearInterval(countdownRef);
-            const el = document.getElementById('timerDisplay');
+            const el = document.getElementById('debugLog');
             countdownRef = setInterval(() => {
-                el.innerText = `След. анализ новостей через: ${sec--} сек`;
+                if(sec % 10 === 0) log(`Жду... ${sec} сек`); // Не спамим каждую секунду
+                sec--;
                 if(sec < 0) clearInterval(countdownRef);
             }, 1000);
         }

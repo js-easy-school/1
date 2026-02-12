@@ -1,51 +1,51 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Trader v9.0 (Target Profit)</title>
+    <title>AI Trader v10.0 (Smart Trend)</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: #141414;
-            --text-main: #ededed;
-            --accent-green: #00ff66;
-            --accent-red: #ff3333;
-            --accent-yellow: #ffcc00;
-            --accent-blue: #00ccff;
-            --border: #333;
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --text-main: #c5c6c7;
+            --accent-green: #45a29e;
+            --accent-red: #d9534f;
+            --accent-yellow: #f0ad4e;
+            --accent-blue: #66fcf1;
+            --border: #45a29e;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 10px;
-            padding-bottom: 100px;
+            padding-bottom: 120px;
         }
 
         h1 {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             text-align: center;
             color: var(--accent-blue);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
         }
 
         /* Settings */
         .settings-panel {
-            background: #0a0a0a;
-            border: 1px solid var(--border);
+            background: #14181c;
+            border: 1px solid #333;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,204,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .input-group { margin-bottom: 10px; }
+        .input-group { margin-bottom: 12px; }
         
         input, select {
             width: 100%;
@@ -53,538 +53,445 @@
             border: 1px solid #444;
             color: #fff;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 0.9rem;
             outline: none;
-            box-sizing: border-box;
         }
 
-        .controls { display: flex; gap: 8px; align-items: stretch; }
+        .controls { display: flex; gap: 10px; }
         
         button {
             border: none;
-            border-radius: 8px;
-            font-weight: 800;
+            border-radius: 6px;
+            font-weight: bold;
             font-size: 0.9rem;
             text-transform: uppercase;
             cursor: pointer;
-            padding: 14px;
+            padding: 15px;
             transition: 0.2s;
+            flex: 1;
         }
         
-        .btn-start { flex: 2; background: linear-gradient(45deg, #00b09b, #96c93d); color: #000; }
-        .btn-stop { flex: 1; background: #333; color: #fff; }
-        
-        .btn-sound {
-            flex: 0.5;
-            background: #222;
-            color: #666;
-            font-size: 1.2rem;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .sound-on { color: var(--accent-yellow); border: 1px solid var(--accent-yellow); box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+        .btn-start { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(69, 162, 158, 0.4); }
+        .btn-stop { background: #333; color: #fff; }
+        .btn-sound { flex: 0.3; background: #222; font-size: 1.2rem; }
+        .sound-on { color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
 
         /* Grid */
         .grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 15px;
         }
-        
-        @media (min-width: 600px) {
-            .grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media (min-width: 600px) { .grid { grid-template-columns: 1fr 1fr; } }
 
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
+            border-left: 4px solid #333; /* Default border */
+            border-radius: 8px;
+            padding: 15px;
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
         }
+        
+        .card.buy-mode { border-left-color: var(--accent-green); }
+        .card.sell-mode { border-left-color: var(--accent-red); }
 
-        /* Header */
+        /* Card Content */
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
         }
         
-        .asset-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
-        .asset-code { font-size: 0.65rem; color: #666; font-family: monospace; }
-        
-        .price-box { text-align: right; }
-        .price-current { font-size: 1rem; font-weight: bold; font-family: monospace; }
-        .price-change { font-size: 0.7rem; font-weight: bold; }
+        .asset-name { font-weight: bold; font-size: 1rem; color: #fff; }
+        .asset-code { font-size: 0.7rem; color: #888; }
+        .price-current { font-size: 1.1rem; font-weight: bold; font-family: monospace; color: #fff; }
+        .price-change { font-size: 0.8rem; font-weight: bold; text-align: right; }
 
-        /* Signal Row */
-        .signal-row {
+        .status-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
-        .signal-badge {
+        .action-badge {
             background: #111;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-weight: 900;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            border: 1px solid #333;
-            min-width: 60px;
-            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
         }
 
-        .sig-buy { color: var(--accent-green); border-color: var(--accent-green); background: rgba(0,255,102,0.1); }
-        .sig-sell { color: var(--accent-red); border-color: var(--accent-red); background: rgba(255,51,51,0.1); }
-        .sig-wait { color: #888; border-color: #444; }
-
-        /* Potential Profit Tag */
-        .profit-tag {
+        .profit-badge {
             font-family: monospace;
             font-weight: bold;
             font-size: 1rem;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 4px;
             background: #000;
-            min-width: 70px;
-            text-align: center;
-            display: none; /* Скрыто пока нет сигнала > 70% */
-        }
-        .profit-green { color: #00ff66; border: 1px solid #004411; background: rgba(0,255,102,0.1); box-shadow: 0 0 10px rgba(0,255,102,0.1); }
-        .profit-red { color: #ff3333; border: 1px solid #441111; background: rgba(255,51,51,0.1); box-shadow: 0 0 10px rgba(255,51,51,0.1); }
-        
-        .prob-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #666;
-            margin-bottom: 2px;
         }
 
-        /* Progress Bar */
-        .progress-bg {
-            height: 4px;
-            background: #222;
-            border-radius: 2px;
-            margin-bottom: 8px;
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
+        .txt-gray { color: #666; }
+
+        .progress-container {
+            height: 6px;
+            background: #111;
+            border-radius: 3px;
+            margin: 10px 0;
             overflow: hidden;
+            position: relative;
         }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #444;
-            transition: width 0.5s ease;
-        }
+        .progress-bar { height: 100%; transition: width 0.5s; }
 
-        .ai-reason { font-size: 0.75rem; color: #ccc; line-height: 1.2; margin-bottom: 5px; }
+        .ai-text { font-size: 0.8rem; color: #aaa; line-height: 1.4; margin-bottom: 8px; font-style: italic; }
 
-        .levels {
+        .meta-info {
             display: flex;
             justify-content: space-between;
-            font-family: monospace;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: #000;
-            padding: 4px;
-            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 10px;
+            border-top: 1px solid #333;
+            padding-top: 5px;
         }
-        
-        .lvl-sl { color: #ff5252; }
-        .lvl-tp { color: #00e676; }
 
-        .status-bar { text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
-        .loader { display: none; text-align: center; padding: 20px; color: var(--accent-blue); }
-        .warning-text { font-size: 0.7rem; color: #555; text-align: center; margin-top: 20px; }
+        .loader { display: none; text-align: center; padding: 20px; color: var(--accent-blue); font-size: 0.9rem; }
+        .timer { text-align: center; color: #666; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>AI TRADER v9.0 (Full Fix)</h1>
+    <h1>AI TRADER v10.0 (Stable Trend)</h1>
 
     <div class="settings-panel">
         <div class="input-group">
-            <input type="password" id="apiKey" placeholder="OpenRouter Key (sk-or-...)">
+            <input type="password" id="apiKey" placeholder="Вставьте OpenRouter Key (sk-or-...)">
         </div>
         <div class="input-group">
             <select id="modelSelect">
-                <option value="deepseek/deepseek-v3.2" selected>DeepSeek V3.2 (Быстрая ⚡)</option>
-                <option value="deepseek/deepseek-r1">DeepSeek R1 (Умная 🧠)</option>
-                <option value="deepseek/deepseek-chat">DeepSeek V3 (Стандарт)</option>
+                <option value="deepseek/deepseek-v3.2" selected>DeepSeek V3.2 (Скорость/Цена)</option>
+                <option value="deepseek/deepseek-r1">DeepSeek R1 (Макс. Интеллект)</option>
+                <option value="openai/gpt-4o-mini">GPT-4o Mini (Стабильность)</option>
             </select>
         </div>
         <div class="controls">
-            <button class="btn-start" onclick="startCycle()">СТАРТ</button>
-            <button class="btn-stop" onclick="stopCycle()">СТОП</button>
-            <button class="btn-sound" id="soundBtn" onclick="toggleSound()">🔔</button>
+            <button class="btn-start" onclick="startSystem()">ЗАПУСК ТОРГОВ</button>
+            <button class="btn-stop" onclick="stopSystem()">СТОП</button>
+            <button class="btn-sound" id="soundBtn" onclick="toggleSound()">🔇</button>
         </div>
-        <div class="status-bar" id="timerDisplay">Система готова</div>
+        <div class="timer" id="statusText">Ожидание...</div>
     </div>
 
     <div id="loader" class="loader">
-        📡 Глубокий поиск котировок...<br>
-        🧠 Расчет потенциала сделки...
+        📡 Сбор данных MOEX...<br>
+        🧠 Анализ трендов H4/D1...<br>
+        🛡️ Фильтрация рыночного шума...
     </div>
-    <div class="grid" id="cards"></div>
     
-    <div class="warning-text">
-        ⚠️ Процент показывает ожидаемую прибыль до TP.<br>
-        Отображается только при уверенности AI > 70%.
-    </div>
+    <div class="grid" id="cards"></div>
 
     <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        // Обновленный список с учетом специфики MOEX
         const ASSETS = [
             { code: 'SRH6', name: 'Сбербанк', desc: 'SBRF-3.26' },
-            { code: 'SiH6', name: 'Доллар', desc: 'Si-3.26' },
-            { code: 'CRH6', name: 'Юань', desc: 'CNY-3.26' },
-            { code: 'EuH6', name: 'Евро', desc: 'Eu-3.26' },
+            { code: 'SiH6', name: 'USD/RUB', desc: 'Si-3.26' },
+            { code: 'CRH6', name: 'CNY/RUB', desc: 'CNY-3.26' },
+            { code: 'EuH6', name: 'EUR/RUB', desc: 'Eu-3.26' },
             { code: 'GDH6', name: 'Золото', desc: 'GOLD-3.26' },
             { code: 'SVH6', name: 'Серебро', desc: 'SILV-3.26' },
-            { code: 'BRH6', name: 'Нефть', desc: 'BR-3.26' },
+            { code: 'BRH6', name: 'Нефть Brent', desc: 'BR-3.26' },
             { code: 'NGH6', name: 'Газ', desc: 'NG-3.26' },
-            { code: 'WHH6', name: 'Пшеница', desc: 'WHEAT-3.26' }, // Сложный актив
-            { code: 'MXH6', name: 'Индекс', desc: 'MIX-3.26' },
-            { code: 'CCH6', name: 'Какао', desc: 'COCOA-3.26' }, // Сложный актив
-            { code: 'KCH6', name: 'Кофе', desc: 'COFFEE-3.26' }  // Сложный актив
+            { code: 'WHH6', name: 'Пшеница', desc: 'WHEAT-3.26' },
+            { code: 'MXH6', name: 'Индекс MOEX', desc: 'MIX-3.26' },
+            { code: 'CCH6', name: 'Какао', desc: 'COCOA-3.26' },
+            { code: 'KCH6', name: 'Кофе', desc: 'COFFEE-3.26' }
         ];
 
-        let marketData = {};
-        let previousSignals = {};
-        let intervalRef = null;
-        let countdownRef = null;
-        let wakeLock = null;
-        let soundEnabled = false;
-        const CYCLE_TIME = 300000; // 5 минут
-
-        window.onload = () => {
-            if(localStorage.getItem('or_key')) document.getElementById('apiKey').value = localStorage.getItem('or_key');
-            renderGrid();
-            if ("Notification" in window && Notification.permission !== "granted") Notification.requestPermission();
+        let state = {
+            market: {},     // Текущие данные
+            signals: {},    // Последние сигналы {action, prob, entryPrice}
+            running: false,
+            sound: false
         };
 
+        let timerRef = null;
+        let wakeLock = null;
+        const UPDATE_INTERVAL = 300000; // 5 минут (Чтобы не ловить минутный шум)
+
+        window.onload = () => {
+            const savedKey = localStorage.getItem('or_key');
+            if(savedKey) document.getElementById('apiKey').value = savedKey;
+            renderGrid();
+        };
+
+        // --- UI RENDER ---
         function renderGrid() {
             const grid = document.getElementById('cards');
             grid.innerHTML = '';
-            ASSETS.forEach(a => {
+            
+            ASSETS.forEach(asset => {
+                const s = state.signals[asset.code] || { action: 'WAIT', prob: 0, reason: 'Ожидание анализа...' };
+                const m = state.market[asset.code] || { price: 0, change: 0 };
+                
+                // Стиль карточки
+                let modeClass = '';
+                if(s.action === 'BUY') modeClass = 'buy-mode';
+                if(s.action === 'SELL') modeClass = 'sell-mode';
+
+                // Расчет потенциала/профита
+                let profitText = "0.0%";
+                let profitClass = "txt-gray";
+                
+                if (s.entryPrice && m.price > 0 && s.action !== 'WAIT') {
+                    let diff = 0;
+                    if(s.action === 'BUY') diff = ((m.price - s.entryPrice) / s.entryPrice) * 100;
+                    if(s.action === 'SELL') diff = ((s.entryPrice - m.price) / s.entryPrice) * 100;
+                    
+                    profitText = (diff > 0 ? '+' : '') + diff.toFixed(2) + '%';
+                    profitClass = diff >= 0 ? 'txt-green' : 'txt-red';
+                }
+
                 grid.innerHTML += `
-                    <div class="card" id="card-${a.code}">
+                    <div class="card ${modeClass}" id="card-${asset.code}">
                         <div class="card-header">
                             <div>
-                                <div class="asset-name">${a.name}</div>
-                                <div class="asset-code">${a.desc}</div>
+                                <div class="asset-name">${asset.name}</div>
+                                <div class="asset-code">${asset.desc}</div>
                             </div>
-                            <div class="price-box">
-                                <div class="price-current" id="p-${a.code}">---</div>
-                                <div class="price-change" id="c-${a.code}">0%</div>
+                            <div>
+                                <div class="price-current">${m.price || '---'}</div>
+                                <div class="price-change" style="color: ${m.change >= 0 ? '#45a29e' : '#d9534f'}">
+                                    ${m.change || 0}%
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="signal-row">
-                            <div class="signal-badge sig-wait" id="sig-${a.code}">WAIT</div>
-                            <div class="profit-tag" id="profit-${a.code}">+0.0%</div>
-                        </div>
-                        
-                        <div class="prob-row">
-                            <span>Уверенность AI:</span>
-                            <span id="prob-${a.code}">0%</span>
-                        </div>
-                        
-                        <div class="progress-bg">
-                            <div class="progress-fill" id="bar-${a.code}"></div>
                         </div>
 
-                        <div class="ai-reason" id="r-${a.code}">Ожидание запуска...</div>
+                        <div class="status-row">
+                            <div class="action-badge" style="color: ${getActionColor(s.action)}">
+                                ${s.action}
+                            </div>
+                            <div class="profit-badge ${profitClass}">
+                                ${profitText}
+                            </div>
+                        </div>
+
+                        <div class="ai-text">${s.reason}</div>
+
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${s.prob}%; background: ${getActionColor(s.action)}"></div>
+                        </div>
+
+                        <div class="meta-info">
+                            <span>Сила сигнала: ${s.prob}%</span>
+                            <span>Target: ${s.tp || '---'}</span>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const btn = document.getElementById('soundBtn');
-            if(soundEnabled) {
-                btn.classList.add('sound-on');
-                document.getElementById('alertSound').play().catch(()=>{});
-            } else {
-                btn.classList.remove('sound-on');
-            }
+        function getActionColor(action) {
+            if(action === 'BUY') return 'var(--accent-green)';
+            if(action === 'SELL') return 'var(--accent-red)';
+            return '#666';
         }
 
-        async function startCycle() {
+        // --- CORE LOGIC ---
+
+        async function startSystem() {
             const key = document.getElementById('apiKey').value;
             if(!key) return alert('Введите API ключ!');
             localStorage.setItem('or_key', key);
             
-            try {
-                if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
-            } catch (err) {}
-
+            state.running = true;
+            document.querySelector('.btn-start').innerText = 'РАБОТАЕТ...';
             document.querySelector('.btn-start').disabled = true;
-            document.querySelector('.btn-start').innerText = 'РАБОТАЕТ';
-            
-            runAnalysis();
-            intervalRef = setInterval(runAnalysis, CYCLE_TIME);
+
+            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){}
+
+            runCycle();
+            timerRef = setInterval(runCycle, UPDATE_INTERVAL);
         }
 
-        function stopCycle() {
-            clearInterval(intervalRef);
-            clearInterval(countdownRef);
+        function stopSystem() {
+            state.running = false;
+            clearInterval(timerRef);
             if(wakeLock) wakeLock.release();
+            document.querySelector('.btn-start').innerText = 'ЗАПУСК ТОРГОВ';
             document.querySelector('.btn-start').disabled = false;
-            document.querySelector('.btn-start').innerText = 'СТАРТ';
-            document.getElementById('timerDisplay').innerText = 'Остановлено';
+            document.getElementById('statusText').innerText = 'Остановлено';
         }
 
-        async function runAnalysis() {
+        async function runCycle() {
+            if(!state.running) return;
+            
             document.getElementById('loader').style.display = 'block';
-            await fetchMoexMulti(); // Используем усиленную функцию
-            await askDeepSeek();
-            startTimer(CYCLE_TIME / 1000);
+            
+            await fetchMoexData();
+            await analyzeMarket(); // Теперь с историей!
+            
+            renderGrid();
             document.getElementById('loader').style.display = 'none';
+            startCountdown(UPDATE_INTERVAL / 1000);
         }
 
-        // --- УСИЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ КОТИРОВОК ---
-        async function fetchMoexMulti() {
+        // Улучшенная загрузка (с поддержкой неликвида)
+        async function fetchMoexData() {
             for (let asset of ASSETS) {
                 try {
                     const url = `https://iss.moex.com/iss/engines/futures/markets/forts/securities/${asset.code}.json`;
                     const res = await fetch(url);
                     const json = await res.json();
                     
-                    // Хелпер для поиска значения в любом блоке
-                    const findValue = (columns, row, names) => {
+                    const find = (block, names) => {
+                        if(!block || !block.data.length) return null;
                         for(let name of names) {
-                            const idx = columns.indexOf(name);
-                            if(idx !== -1 && row[idx] !== null) return row[idx];
+                            let idx = block.columns.indexOf(name);
+                            if(idx > -1 && block.data[0][idx] != null) return block.data[0][idx];
                         }
                         return null;
                     };
 
-                    let price = null;
-                    let change = 0;
+                    // Приоритет: Сделки -> Справочник
+                    let price = find(json.marketdata, ['LAST', 'THEORPRICE']) || 
+                                find(json.securities, ['PREVPRICE', 'THEORPRICE', 'SETTLEMENTPRICE']) || 0;
                     
-                    // 1. Ищем цену в Marketdata (реальные сделки)
-                    if(json.marketdata && json.marketdata.data.length > 0) {
-                        const row = json.marketdata.data[0];
-                        const cols = json.marketdata.columns;
-                        
-                        // Ищем цену в порядке приоритета: Последняя, Теоретическая, Расчетная
-                        price = findValue(cols, row, ['LAST', 'THEORPRICE', 'SETTLEMENTPRICE']);
-                        change = findValue(cols, row, ['LASTCHANGEPRCNT']) || 0;
-                    }
+                    let change = find(json.marketdata, ['LASTCHANGEPRCNT']) || 0;
+                    let high = find(json.marketdata, ['HIGH']) || price;
+                    let low = find(json.marketdata, ['LOW']) || price;
 
-                    // 2. Если в Marketdata пусто, ищем в Securities (справочник)
-                    if(price == null && json.securities && json.securities.data.length > 0) {
-                        const row = json.securities.data[0];
-                        const cols = json.securities.columns;
-                        
-                        // Ищем: Вчерашняя, Теоретическая, Расчетная
-                        price = findValue(cols, row, ['PREVPRICE', 'THEORPRICE', 'SETTLEMENTPRICE']);
-                        if(change === 0) change = 0; // Для неликвида изменение считаем 0
-                    }
-
-                    // Заглушки
-                    if(!price) price = 0;
-                    
-                    // High/Low (если нет, берем текущую цену)
-                    let high = price;
-                    let low = price;
-                    if(json.marketdata && json.marketdata.data.length > 0) {
-                         const h = findValue(json.marketdata.columns, json.marketdata.data[0], ['HIGH']);
-                         const l = findValue(json.marketdata.columns, json.marketdata.data[0], ['LOW']);
-                         if(h) high = h;
-                         if(l) low = l;
-                    }
-
-                    marketData[asset.code] = { price, change, high, low };
-                    updatePriceUI(asset.code);
+                    state.market[asset.code] = { price, change, high, low };
 
                 } catch (e) {
-                    console.error(`Сбой загрузки ${asset.code}:`, e);
-                    marketData[asset.code] = { price: 0, change: 0, high: 0, low: 0 };
-                    updatePriceUI(asset.code);
+                    console.log(`Error ${asset.code}`);
+                    state.market[asset.code] = { price: 0, change: 0, high: 0, low: 0 };
                 }
             }
         }
 
-        function updatePriceUI(code) {
-            const d = marketData[code];
-            const pEl = document.getElementById(`p-${code}`);
-            if(pEl) pEl.innerText = d.price > 0 ? d.price : "Нет торгов";
-            
-            const cEl = document.getElementById(`c-${code}`);
-            if(cEl) {
-                cEl.innerText = d.change + '%';
-                cEl.style.color = d.change >= 0 ? '#00ff66' : '#ff3333';
-            }
-        }
-
-        async function askDeepSeek() {
+        async function analyzeMarket() {
             const key = document.getElementById('apiKey').value;
             const model = document.getElementById('modelSelect').value;
-            
-            const promptData = ASSETS.map(a => {
-                const d = marketData[a.code];
-                if(d.price === 0) return `${a.name}: Данных нет (неликвид)`;
-                return `${a.name} (${a.code}): Price=${d.price}, PrevDayChange=${d.change}%.`;
+
+            // Формируем умный промпт с ПАМЯТЬЮ
+            const assetsPrompt = ASSETS.map(a => {
+                const m = state.market[a.code];
+                const prev = state.signals[a.code] || { action: 'WAIT' };
+                
+                // Вычисляем положение в диапазоне дня
+                let rangePos = 50;
+                if(m.high !== m.low) rangePos = ((m.price - m.low) / (m.high - m.low)) * 100;
+
+                return `
+                ASSET: ${a.name} (${a.code})
+                - Price: ${m.price}
+                - Day Change: ${m.change}%
+                - Day Range Position: ${rangePos.toFixed(1)}% (0=Low, 100=High)
+                - PREVIOUS SIGNAL: ${prev.action} (Don't flip-flop unless trend reverses!)
+                `;
             }).join('\n');
 
-            const prompt = `
-            Ты Трейдер-Бот. Дай прогноз и уровни.
+            const systemPrompt = `
+            Ты профессиональный Swing-трейдер и Риск-менеджер.
+            Твоя цель: Избегать шума и ловить среднесрочные тренды (H4/D1).
             
-            РЫНОК:
-            ${promptData}
+            ПРАВИЛА АНАЛИЗА:
+            1. ИГНОРИРУЙ мелкие колебания (шум). Если цена изменилась < 0.3% от прошлого сигнала -> KEEP PREVIOUS SIGNAL.
+            2. СИГНАЛ BUY: Только если цена в верхней части диапазона (>60%) И есть положительная динамика.
+            3. СИГНАЛ SELL: Только если цена в нижней части диапазона (<40%) И отрицательная динамика.
+            4. WAIT: Если рынок во флэте (Range Position 40-60%) или тренд неясен.
+            5. СТАБИЛЬНОСТЬ: Если прошлый сигнал был BUY, не меняй на SELL сразу. Сначала WAIT.
             
-            ПРАВИЛА:
-            1. Если вероятность > 70%, укажи четкие SL и TP.
-            2. TP должен быть реалистичным.
-            
-            JSON ONLY:
+            Выдай ответ строго в JSON:
             [{
-                "id": "код",
+                "id": "TICKER",
                 "action": "BUY/SELL/WAIT",
-                "probability": число(0-100),
-                "reason": "кратко причина",
-                "sl": число,
-                "tp": число
+                "prob": 0-100,
+                "reason": "Краткая причина (Тренд вверх/Пробой уровня/Флэт)",
+                "tp": price_number
             }, ...]
             `;
 
             try {
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${key}`,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        "model": model,
-                        "messages": [{"role": "user", "content": prompt}],
-                        "temperature": 0.4
+                        model: model,
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: assetsPrompt }
+                        ],
+                        temperature: 0.3 // Низкая температура для стабильности
                     })
                 });
 
-                const json = await res.json();
-                let content = json.choices[0].message.content;
-                if(content.includes('```')) content = content.replace(/```json/g, '').replace(/```/g, '');
-                
-                const signals = JSON.parse(content);
-                processSignals(signals);
+                const data = await res.json();
+                let cleanJson = data.choices[0].message.content.replace(/```json|```/g, '');
+                const results = JSON.parse(cleanJson);
+
+                let audioTrigger = false;
+
+                results.forEach(res => {
+                    const oldSignal = state.signals[res.id];
+                    const currentPrice = state.market[res.id].price;
+
+                    // Логика сохранения точки входа
+                    let entry = oldSignal ? oldSignal.entryPrice : currentPrice;
+                    
+                    // Если сигнал сменился (BUY -> SELL или WAIT -> BUY), обновляем точку входа
+                    if (oldSignal && oldSignal.action !== res.action && res.action !== 'WAIT') {
+                        entry = currentPrice;
+                        if(res.prob > 60) audioTrigger = true;
+                    }
+
+                    // Обновляем стейт
+                    state.signals[res.id] = {
+                        action: res.action,
+                        prob: res.prob,
+                        reason: res.reason,
+                        tp: res.tp,
+                        entryPrice: entry
+                    };
+                });
+
+                if(audioTrigger && state.sound) playAlert();
 
             } catch (e) {
-                console.error(e);
+                console.error("AI Error:", e);
             }
         }
 
-        function processSignals(signals) {
-            let hasChanges = false;
-            let notifyText = "";
-
-            signals.forEach(s => {
-                const badge = document.getElementById(`sig-${s.id}`);
-                const probVal = document.getElementById(`prob-${s.id}`);
-                const bar = document.getElementById(`bar-${s.id}`);
-                const reason = document.getElementById(`r-${s.id}`);
-                const profitTag = document.getElementById(`profit-${s.id}`);
-                
-                const currentPrice = marketData[s.id].price;
-
-                if(!badge) return;
-
-                // --- ЛОГИКА ОТОБРАЖЕНИЯ ПОТЕНЦИАЛА (FIX) ---
-                if (s.probability > 70 && s.action !== 'WAIT' && s.tp > 0 && currentPrice > 0) {
-                    let potential = 0;
-                    
-                    if(s.action.includes('BUY')) {
-                        // Сколько вырастет до TP
-                        potential = ((s.tp - currentPrice) / currentPrice) * 100;
-                    } else if(s.action.includes('SELL')) {
-                        // Сколько упадет до TP (прибыль шорта)
-                        potential = ((currentPrice - s.tp) / currentPrice) * 100;
-                    }
-
-                    profitTag.style.display = 'block';
-                    // Форматируем: если BUY то зеленый +X%, если SELL то красный (но с плюсом, т.к. это профит)
-                    // Для шорта падение цены = прибыль.
-                    
-                    profitTag.innerText = `Цель: +${Math.abs(potential).toFixed(2)}%`;
-                    
-                    if(s.action.includes('BUY')) {
-                        profitTag.className = 'profit-tag profit-green';
-                    } else {
-                        profitTag.className = 'profit-tag profit-red'; // Красный фон, т.к. играем на понижение
-                    }
-                } else {
-                    profitTag.style.display = 'none';
-                }
-                // -------------------------------------------
-
-                const oldAction = previousSignals[s.id] || "WAIT";
-                if(oldAction !== s.action && s.probability > 70) {
-                    hasChanges = true;
-                    notifyText += `${s.id}: ${s.action} `;
-                }
-                previousSignals[s.id] = s.action;
-
-                // UI
-                badge.innerText = s.action;
-                badge.className = 'signal-badge';
-                
-                let color = '#444';
-                if(s.action.includes('BUY')) {
-                    badge.classList.add('sig-buy');
-                    color = '#00ff66';
-                } else if(s.action.includes('SELL')) {
-                    badge.classList.add('sig-sell');
-                    color = '#ff3333';
-                } else {
-                    badge.classList.add('sig-wait');
-                }
-
-                probVal.innerText = s.probability + '%';
-                probVal.style.color = s.probability > 70 ? color : '#666';
-                
-                bar.style.width = s.probability + '%';
-                bar.style.backgroundColor = color;
-                if(s.probability <= 50) bar.style.backgroundColor = '#333';
-
-                reason.innerHTML = `
-                    ${s.reason}
-                    <div class="levels">
-                        <span class="lvl-sl">SL: ${s.sl}</span>
-                        <span class="lvl-tp">TP: ${s.tp}</span>
-                    </div>
-                `;
-            });
-
-            if(hasChanges && notifyText.length > 0) {
-                if(soundEnabled) document.getElementById('alertSound').play().catch(()=>{});
-                sendNotification("AI СИГНАЛ > 70%", notifyText);
-            }
+        // --- UTILS ---
+        function toggleSound() {
+            state.sound = !state.sound;
+            const btn = document.getElementById('soundBtn');
+            btn.innerText = state.sound ? '🔔' : '🔇';
+            if(state.sound) btn.classList.add('sound-on');
+            else btn.classList.remove('sound-on');
         }
 
-        function sendNotification(title, body) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, { body: body });
-            }
+        function playAlert() {
+            document.getElementById('alertSound').play().catch(e => console.log(e));
         }
 
-        function startTimer(sec) {
-            clearInterval(countdownRef);
-            const display = document.getElementById('timerDisplay');
-            countdownRef = setInterval(() => {
-                display.innerText = `След. анализ через: ${sec--} сек`;
-                if(sec < 0) clearInterval(countdownRef);
+        function startCountdown(seconds) {
+            const el = document.getElementById('statusText');
+            clearInterval(window.countdownInt);
+            window.countdownInt = setInterval(() => {
+                seconds--;
+                el.innerText = `Следующий анализ через: ${seconds} сек`;
+                if(seconds <= 0) clearInterval(window.countdownInt);
             }, 1000);
         }
     </script>
